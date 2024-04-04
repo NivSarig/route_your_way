@@ -67,5 +67,6 @@ if __name__ == "__main__":
 
     log(formatted_now("%H:%M:%S.%f"))
 
+    # The model solver does not work (yet)
+    # solve_tsp_model(deadhead_index)
 
-    solve_tsp_model()

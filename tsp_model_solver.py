@@ -1,9 +1,7 @@
 import glpk as glpk
 
-from route_your_way import deadhead_index
 
-
-def solve_tsp_model(deadhead_index=deadhead_index):
+def solve_tsp_model(deadhead_index):
     lp = glpk.LPX()  # Create an empty LP instance
     glpk.env.term_on = False  # Stop annoying messages
 
