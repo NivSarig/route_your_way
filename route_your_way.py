@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+import os
 
 # In[115]:
 
@@ -9,7 +10,7 @@ from geopy.geocoders import Nominatim
 import random
 from datetime import datetime, timedelta
 
-api_key = 'AIzaSyDP0EV22kIb6LHSh3zEABMe1CTxwzwSdWs'
+api_key = os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
 DO_PRINT = False
 log_file_name = f'/home/niv/dev/route_your_way/log.log'
 COLOR_RED = "\033[91m"
