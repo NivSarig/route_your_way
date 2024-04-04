@@ -224,8 +224,4 @@ if __name__ == "__main__":
     log(formatted_now("%H:%M:%S.%f"))
 
 
-# In[ ]:
-
-
-
-
+    solve_tsp_model()
