@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import LandingPage from "./LandingPage";
 import LeadingBoard from "./LeadingBoard";
+import CreateGamePage from "./CreateGamePage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/map" element={<MapWithPolyline />}></Route>
           <Route path="/" element={<LandingPage />}></Route>
           <Route path="/LeadingBoard" element={<LeadingBoard />}></Route>
+          <Route path="/create" element={<CreateGamePage />}></Route>
         </Routes>
       </Router>
     </div>
