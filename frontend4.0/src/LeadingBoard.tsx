@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import { BACKEND } from "./backend";
 
 interface Data {
   rank: number;
@@ -38,8 +39,6 @@ const Container = styled("div")({
   height: "100vh",
   width: "100vw",
 });
-
-const BACKEND = process.env.BACKEND || "http://localhost:8000";
 
 function LeadingBoard() {
   let location = useLocation();

@@ -11,7 +11,7 @@ import Polyline from "./Polyline";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND = process.env.BACKEND || "http://localhost:8000";
+import { BACKEND } from "./backend";
 // import styled from "styled-components";
 
 // const Marker = styled('div')`
