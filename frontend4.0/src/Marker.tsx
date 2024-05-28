@@ -1,7 +1,7 @@
 import React from "react";
 import { Marker as GoogleMapsMarker } from "@react-google-maps/api";
 
-const Marker = ({ position, text, onClick, onMouseOver }) => {
+const Marker = ({ position, text, onClick, onMouseOver, color }) => {
   return (
     <GoogleMapsMarker
       onClick={onClick}
@@ -19,8 +19,8 @@ const Marker = ({ position, text, onClick, onMouseOver }) => {
       icon={{
         path: google.maps.SymbolPath.CIRCLE,
         scale: 6,
-        strokeColor: "#396DFF",
-        fillColor: "#396DFF",
+        strokeColor: color,
+        fillColor: color,
         fillOpacity: 1,
       }}
       label={{

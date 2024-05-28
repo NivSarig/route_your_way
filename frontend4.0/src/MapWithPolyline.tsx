@@ -7,6 +7,7 @@ import React, {
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import Marker from "./Marker";
 import Polyline from "./Polyline";
+// import  styled from "styled-components";
 // import styled from "styled-components";
 
 // const Marker = styled('div')`
@@ -17,6 +18,11 @@ import Polyline from "./Polyline";
 // position: relative;
 // width: 2.5em;
 // border: 1px solid transparent;`;
+// const Scores = styled.div`
+//   background-color: #D83B01;
+//   border-radius: 50%;
+//   color: red;
+//   font-size: 1.5em;`;
 
 // Define the bounding box coordinates for London
 const londonBounds = {
@@ -44,6 +50,7 @@ const MapWithPolyline = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [totalDistance, setTotalDistance] = useState(0);
+  const [totalMinutes, setTotalMinutes] = useState(0);
 
   // Starting the user path drawing
   const onMarkerClick = useCallback((index) => {
@@ -58,7 +65,14 @@ const MapWithPolyline = () => {
 
   const [directionsService, setDirectionsService] = useState(null);
 
-  // const directionsService = new google.maps.DirectionsService();
+  const getPointColor = useCallback((index: number) => {
+    if (pointsOrder.includes(index)) {
+      return "#FF2C95";
+    } else {
+      return "grey";
+    }
+  }, [pointsOrder]);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -69,22 +83,7 @@ const MapWithPolyline = () => {
   }, []);
 
     const getRouteDistance = useCallback(async (originPoint, destinationPoint) => {
-      debugger;
       try {
-        // directionsService.route()
-        // const response = await fetch(
-        //   `https://maps.googleapis.com/maps/api/directions/json?origin=${originPoint.lat},${originPoint.lng}&destination=${destinationPoint.lat},${destinationPoint.lng}&mode=walking&key=YOUR_API_KEY`,
-        //   { mode: 'cors' }
-        // );
-        // const data = await response.json();
-        // if (data.status === "OK") {
-        //   const route = data.routes[0];
-        //   const distance = route.legs[0].distance.text;
-        //   const polyline = route.overview_polyline.points;
-        //   return { distance, polyline };
-        // } else {
-        //   return { distance: 0, polyline: [] };
-        // }
         const route = await new Promise((resolve, reject) => {
           directionsService.route(
             {
@@ -93,7 +92,6 @@ const MapWithPolyline = () => {
               travelMode: google.maps.TravelMode.WALKING,
             },
             (response, status) => {
-              debugger;
               if (status === google.maps.DirectionsStatus.OK) {
                 resolve(response.routes[0]);
               } else {
@@ -104,14 +102,17 @@ const MapWithPolyline = () => {
         });
 
         //@ts-ignore
-        const distance = route.legs[0].distance.text;
+        const distance = route.legs[0].distance.value;
         //@ts-ignore
         const polyline = route.legs[0].steps.map(step=> {return step.lat_lngs}).flat();
 
-        return { distance, polyline };
+        //@ts-ignore
+        const minutes = route.legs[0].duration.value / 60;
+
+        return { distance, polyline, minutes };
       } catch (error) {
         console.error("Error:", error);
-        return { distance: 0, polyline: [] };
+        return { distance: 0, polyline: [], minutes: 0};
       }
     }, [directionsService]);
 
@@ -122,21 +123,29 @@ const MapWithPolyline = () => {
       if (isDrawing && !pointsOrder.includes(index)) {
         setPointsOrder((prevOrder) => [...prevOrder, index]);
         const route = await getRouteDistance(newMarkers[pointsOrder[pointsOrder.length - 1]], newMarkers[index]);
-        
+        setTotalDistance((prevDistance) => prevDistance + route?.distance);
+        setTotalMinutes((prevMinutes) => prevMinutes + route?.minutes);
         setPolyline((prevPath) => [...prevPath, ...route?.polyline]);
       }
     },
     [getRouteDistance, isDrawing, pointsOrder]
   );
 
-  // const handleMapClick = useCallback((event) => {
-  //   setPolyline((prevPath) => [...prevPath, event.latLng.toJSON()]);
-  // }, []);
+  const isGameFinished = useCallback(() => {
+    return pointsOrder.length === newMarkers.length;
+  }, [pointsOrder.length]);
+
+
+  const formatTime = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours} Hours, ${remainingMinutes} Minutes`;
+  };
+
 
   return (
     <LoadScript
       googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs"
-      // onLoad={() => setIsReady(true)}
     >
       <GoogleMap
         onLoad={() => setIsReady(true)}
@@ -146,10 +155,6 @@ const MapWithPolyline = () => {
         // onClick={handleMapClick}
         onMouseUp={onMMouseUp}
         // options={{gestureHandling:'none'}}
-
-        // options={{
-        //   markerClusterer: null, // Disable marker clustering
-        // }}
       >
         {
           // isReady &&
@@ -160,16 +165,34 @@ const MapWithPolyline = () => {
               key={index}
               position={marker}
               text={`${index}`}
+              color={getPointColor(index)}
             />
           ))
         }
-        {/* {markers.map((marker, index) => (
-          <Marker {...marker} key={index} />
-        ))} */}
         <Polyline
           path={polyline}
-          options={{ strokeColor: "#FF2C95", strokeWeight: 2 }}
+          options={{ strokeColor: "#FF2C95", strokeWeight: 5 }}
         />
+        <div
+          style={{
+            position: "absolute",
+            top: "90%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            fontSize: "2em",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          {totalDistance} Metres
+          <br />
+          {formatTime(Math.round(totalMinutes))}
+          <br />
+          {isGameFinished() &&  <span style={{color:'red'}}>Game Over!</span>}
+        </div>
+
       </GoogleMap>
     </LoadScript>
   );
