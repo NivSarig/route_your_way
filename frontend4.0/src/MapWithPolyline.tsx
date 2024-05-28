@@ -14,26 +14,12 @@ import { useNavigate } from "react-router-dom";
 import { BACKEND } from "./backend";
 // import styled from "styled-components";
 
-// const Marker = styled('div')`
-// background-color: #D83B01;
-// border-radius: 50%;
-// color: #fff;
-// height: 2.5em;
-// position: relative;
-// width: 2.5em;
-// border: 1px solid transparent;`;
-// const Scores = styled.div`
-//   background-color: #D83B01;
-//   border-radius: 50%;
-//   color: red;
-//   font-size: 1.5em;`;
-
 // Define the bounding box coordinates for London
 const londonBounds = {
-  north: 51.6926,
-  south: 51.3876,
-  west: -0.5087,
-  east: 0.2334,
+  north: 51.5287718,
+  south: 51.5073509,
+  west: -0.1277583,
+  east: -0.064657,
 };
 const someRandomMarkers: { lat: number; lng: number }[] = [];
 for (let i = 0; i < 10; i++) {
@@ -41,8 +27,6 @@ for (let i = 0; i < 10; i++) {
   const lng = londonBounds.west + Math.random() * (londonBounds.east - londonBounds.west);
   someRandomMarkers.push({ lat, lng });
 }
-someRandomMarkers.push({ lat: 51.518412, lng: -0.125755 });
-
 const MapWithPolyline = () => {
   // const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
   const navigate = useNavigate();
@@ -58,7 +42,7 @@ const MapWithPolyline = () => {
   const [gameState, setGameState] = useState({} as any);
   useEffect(() => {
     console.log("joining", location.state);
-    fetch(`${BACKEND}/game/${location.state.code}/contestant?name=${location.state.name}`, {
+    fetch(`${'route-your-way.ops-optibus.com'}/game/${location.state.code}/contestant?name=${location.state.name}`, {
       method: "PUT",
     }).then(async response => {
       const newGameState = await response.json();
@@ -99,6 +83,8 @@ const MapWithPolyline = () => {
       setIsDrawing(true);
       setPointsOrder([index]);
       setPolyline([markers[index]]);
+      setTotalDistance(0);
+      setTotalMinutes(0);
     },
     [markers]
   );
@@ -119,6 +105,21 @@ const MapWithPolyline = () => {
     },
     [pointsOrder]
   );
+
+  const boundingBox = useCallback(()=> {
+    let north = -Infinity;
+    let south = Infinity;
+    let west = Infinity;
+    let east = -Infinity;
+    markers.forEach(marker => {
+      if (marker.lat > north) north = marker.lat;
+      if (marker.lat < south) south = marker.lat;
+      if (marker.lng < west) west = marker.lng;
+      if (marker.lng > east) east = marker.lng;
+    });
+    return { north, south, west, east};
+  }, [markers]);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -194,6 +195,12 @@ const MapWithPolyline = () => {
     return `${hours} Hours, ${remainingMinutes} Minutes`;
   };
 
+  const formatDistance = (distance: number): string => {
+    const km = Math.floor(distance / 1000);
+    const m = distance % 1000;
+    return `${km} KM, ${m} M`;
+  };
+
   return (
     <LoadScript googleMapsApiKey='AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs'>
       <GoogleMap
@@ -203,8 +210,18 @@ const MapWithPolyline = () => {
         zoom={15}
         // onClick={handleMapClick}
         onMouseUp={onMMouseUp}
-        // options={{gestureHandling:'none'}}
-      >
+        options={{
+          gestureHandling: 'none',
+          restriction: {
+            latLngBounds: {
+              north: boundingBox().north,
+              south: boundingBox().south,
+              west: boundingBox().west,
+              east: boundingBox().east,
+            },
+          },
+        }}
+            >
         {
           // isReady &&
           markers.map((marker, index) => (
@@ -213,12 +230,12 @@ const MapWithPolyline = () => {
               onMouseOver={() => onMarkerHover(index)}
               key={index}
               position={marker}
-              text={`${index}`}
+              text={`${index+1}`}
               color={getPointColor(index)}
             />
           ))
         }
-        <Polyline path={polyline} options={{ strokeColor: "#FF2C95", strokeWeight: 5 }} />
+        <Polyline path={polyline} options={{ strokeColor: "#FF2C95", strokeWeight: 8 }} />
         <div
           style={{
             position: "absolute",
@@ -232,7 +249,7 @@ const MapWithPolyline = () => {
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.3)",
           }}
         >
-          {totalDistance} Metres
+          {formatDistance(totalDistance)}
           <br />
           {formatTime(Math.round(totalMinutes))}
           <br />
