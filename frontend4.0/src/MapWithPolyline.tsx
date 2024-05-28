@@ -66,6 +66,16 @@ const MapWithPolyline = () => {
       setMarkers(
         newGameState.location.coordinates.map((coord: [number, number]) => ({ lat: coord[0], lng: coord[1] }))
       );
+      const poll = () => {
+        fetch(`${BACKEND}/game/${location.state.code}`, {
+          method: "GET",
+        }).then(async response => {
+          const newGameState = await response.json();
+          console.log("game state", newGameState);
+          setGameState(newGameState);
+        });
+      };
+      setInterval(poll, 5000);
     });
   }, [location.state.code]);
 
@@ -187,7 +197,7 @@ const MapWithPolyline = () => {
         onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
         center={markers[0]} // Center on London
-        zoom={10}
+        zoom={15}
         // onClick={handleMapClick}
         onMouseUp={onMMouseUp}
         // options={{gestureHandling:'none'}}
