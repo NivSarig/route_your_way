@@ -1,8 +1,10 @@
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from dotenv import load_dotenv
 
 from game import add_contestant, add_submit, create_game, get_game
 
 
+load_dotenv()
 app = FastAPI()
 
 
@@ -38,8 +40,9 @@ async def put_done(game_id: str = None):
 async def get_game_endpoint(game_id: str = None):
     return get_game(game_id)
 
-@app.put("/game/{game_id}/submit/{url}")
-async def submit(game_id: str, name: str, url:str , background_tasks: BackgroundTasks):
+
+@app.put("/game/{game_id}/submit")
+async def submit(game_id: str, name: str, url: str, background_tasks: BackgroundTasks):
     curr_game = get_game(game_id)
     if not name:
         # create an exception
