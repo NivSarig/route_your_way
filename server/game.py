@@ -69,4 +69,4 @@ def add_submit(game_id, name, coordinates):
     curr_game["contestants"][name]["status"] = "done"
 
 
-create_game("TEST", "TEST")
+create_game("Tel Aviv", "TEST")
