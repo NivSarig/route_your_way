@@ -22,6 +22,7 @@ function App() {
           <Route path="/" element={<LandingPage />}></Route>
           <Route path="/LeadingBoard" element={<LeadingBoard />}></Route>
           <Route path="/create" element={<CreateGamePage />}></Route>
+          <Route path="/join" element={<CreateGamePage />}></Route>
         </Routes>
       </Router>
     </div>

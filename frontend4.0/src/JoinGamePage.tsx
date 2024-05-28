@@ -6,7 +6,6 @@ import InputLabel from "@mui/material/InputLabel";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BACKEND } from "./backend";
 
 const Container = styled("div")({
   backgroundImage: `url(${img})`,
@@ -34,13 +33,15 @@ const StyledSelect = styled(Select)({
   // margin: "10px",
 });
 const cities = ["London", "Tel Aviv"];
+const BACKEND = process.env.BACKEND || "http://localhost:8000";
 
-function CreateGamePage() {
+function JoinGamePage() {
   const [city, setCity] = useState<string>();
   const [name, setName] = useState<string>();
+  const [code, setCode] = useState<string>();
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setCity(event.target.value);
+  const handleCodeChange = (event) => {
+    setCode(event.target.value);
   };
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -67,28 +68,20 @@ function CreateGamePage() {
     <Container>
       {/* <InputLabel id="demo-simple-select-label">Barel</InputLabel> */}
       <ContentContainer>
-        <StyledSelect
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={city}
-          label="Barel"
-          variant="standard"
-          // placeholder="Select a city"
-          onChange={handleChange}
-        >
-          {cities.map((city) => (
-            <MenuItem value={city}>{city}</MenuItem>
-          ))}
-        </StyledSelect>
-        {city && (
-          <TextField
-            label="Name"
-            variant="filled"
-            value={name}
-            onChange={handleNameChange}
-          />
-        )}
-        {city && (
+        <TextField
+          label="Name"
+          variant="filled"
+          value={name}
+          onChange={handleNameChange}
+        />
+        <TextField
+          label="Code"
+          variant="filled"
+          value={name}
+          onChange={handleCodeChange}
+        />
+
+        {name && code && (
           <Button disabled={!name} variant="contained" onClick={onCreate}>
             Create
           </Button>
@@ -98,4 +91,4 @@ function CreateGamePage() {
   );
 }
 
-export default CreateGamePage;
+export default JoinGamePage;
