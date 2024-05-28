@@ -37,8 +37,11 @@ const londonBounds = {
 };
 const someRandomMarkers: { lat: number; lng: number }[] = [];
 for (let i = 0; i < 10; i++) {
-  const lat = londonBounds.south + Math.random() * (londonBounds.north - londonBounds.south);
-  const lng = londonBounds.west + Math.random() * (londonBounds.east - londonBounds.west);
+  const lat =
+    londonBounds.south +
+    Math.random() * (londonBounds.north - londonBounds.south);
+  const lng =
+    londonBounds.west + Math.random() * (londonBounds.east - londonBounds.west);
   someRandomMarkers.push({ lat, lng });
 }
 someRandomMarkers.push({ lat: 51.518412, lng: -0.125755 });
@@ -58,9 +61,12 @@ const MapWithPolyline = () => {
   const [gameState, setGameState] = useState({} as any);
   useEffect(() => {
     console.log("joining", location.state);
-    fetch(`${BACKEND}/game/${location.state.code}/contestant?name=${location.state.name}`, {
-      method: "PUT",
-    }).then(async response => {
+    fetch(
+      `${BACKEND}/game/${location.state.code}/contestant?name=${location.state.name}`,
+      {
+        method: "PUT",
+      }
+    ).then(async (response) => {
       const newGameState = await response.json();
       console.log("game state", newGameState);
       setGameState(newGameState);
@@ -73,7 +79,7 @@ const MapWithPolyline = () => {
       const poll = () => {
         fetch(`${BACKEND}/game/${location.state.code}`, {
           method: "GET",
-        }).then(async response => {
+        }).then(async (response) => {
           const newGameState = await response.json();
           console.log("game state", newGameState);
           setGameState(newGameState);
@@ -84,22 +90,30 @@ const MapWithPolyline = () => {
   }, [location.state.code]);
 
   const onSubmit = () => {
-    fetch(`${BACKEND}/game/${gameState.game_id}/submit?name=${location.state.name}`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pointsOrder),
-    }).then(() => {
+    fetch(
+      `${BACKEND}/game/${gameState.game_id}/submit?name=${location.state.name}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pointsOrder),
+      }
+    ).then(() => {
       navigate("/LeadingBoard", { state: { code: gameState.game_id } });
     });
   };
 
   // Starting the user path drawing
 
-  const onMMouseUp = useCallback(index => {
+  const onMMouseUp = useCallback((index) => {
     setIsDrawing(false);
+  }, []);
+  const resetDrawing = useCallback((index) => {
+    setIsDrawing(false);
+    setPointsOrder([]);
+    setPolyline([]);
   }, []);
 
   const [directionsService, setDirectionsService] = useState(null);
@@ -137,7 +151,9 @@ const MapWithPolyline = () => {
               if (status === google.maps.DirectionsStatus.OK) {
                 resolve(response.routes[0]);
               } else {
-                reject(new Error(`Directions request failed. Status: ${status}`));
+                reject(
+                  new Error(`Directions request failed. Status: ${status}`)
+                );
               }
             }
           );
@@ -147,7 +163,7 @@ const MapWithPolyline = () => {
         const distance = route.legs[0].distance.value;
         //@ts-ignore
         const polyline = route.legs[0].steps
-          .map(step => {
+          .map((step) => {
             return step.lat_lngs;
           })
           .flat();
@@ -182,7 +198,7 @@ const MapWithPolyline = () => {
   //   [getRouteDistance, isDrawing, pointsOrder, markers]
   // );
   const onMarkerClick = useCallback(
-    async index => {
+    async (index) => {
       console.log("index", index);
       console.log("marker", markers[index]);
       if (pointsOrder.length === 0) {
@@ -190,11 +206,14 @@ const MapWithPolyline = () => {
         setPointsOrder([index]);
         setPolyline([markers[index]]);
       } else if (isDrawing && !pointsOrder.includes(index)) {
-        setPointsOrder(prevOrder => [...prevOrder, index]);
-        const route = await getRouteDistance(markers[pointsOrder[pointsOrder.length - 1]], markers[index]);
-        setTotalDistance(prevDistance => prevDistance + route?.distance);
-        setTotalMinutes(prevMinutes => prevMinutes + route?.minutes);
-        setPolyline(prevPath => [...prevPath, ...route?.polyline]);
+        setPointsOrder((prevOrder) => [...prevOrder, index]);
+        const route = await getRouteDistance(
+          markers[pointsOrder[pointsOrder.length - 1]],
+          markers[index]
+        );
+        setTotalDistance((prevDistance) => prevDistance + route?.distance);
+        setTotalMinutes((prevMinutes) => prevMinutes + route?.minutes);
+        setPolyline((prevPath) => [...prevPath, ...route?.polyline]);
       }
     },
     [getRouteDistance, isDrawing, markers, pointsOrder]
@@ -211,14 +230,14 @@ const MapWithPolyline = () => {
   };
 
   return (
-    <LoadScript googleMapsApiKey='AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs'>
+    <LoadScript googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs">
       <GoogleMap
         onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
         center={markers[0]} // Center on London
         zoom={12}
         // onClick={handleMapClick}
-        onMouseUp={onMMouseUp}
+        // onMouseUp={onMMouseUp}
         // options={{gestureHandling:'none'}}
       >
         {
@@ -234,7 +253,10 @@ const MapWithPolyline = () => {
             />
           ))
         }
-        <Polyline path={polyline} options={{ strokeColor: "#FF2C95", strokeWeight: 5 }} />
+        <Polyline
+          path={polyline}
+          options={{ strokeColor: "#FF2C95", strokeWeight: 5 }}
+        />
         <div
           style={{
             position: "absolute",
@@ -252,11 +274,19 @@ const MapWithPolyline = () => {
           <br />
           {formatTime(Math.round(totalMinutes))}
           <br />
-          {allPointsCovered() && <span style={{ color: "red" }}>Game Over!</span>}
+          {allPointsCovered() && (
+            <span style={{ color: "red" }}>Game Over!</span>
+          )}
           <br />
           {gameState.game_id}
           <button disabled={!allPointsCovered()} onClick={onSubmit}>
             Submit
+          </button>
+          <button
+            disabled={!allPointsCovered || gameState.status === "done"}
+            onClick={resetDrawing}
+          >
+            Reset
           </button>
         </div>
       </GoogleMap>
