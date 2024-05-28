@@ -6,7 +6,7 @@ import requests
 from geopy import Nominatim
 
 GMAPS_API_KEY = os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
-URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}"
+URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}&mode=walking"
 
 
 def get_durations_from_url(gmaps_url):
@@ -40,7 +40,6 @@ def generate_random_coordinates(city, num_coordinates):
         print("City not found or coordinates not available.", True)
 
     url = get_url_from_coordinates(coordinates)
-    print("url=", end=" ")
     print("{}".format(url))
 
     return url, coordinates
@@ -154,9 +153,7 @@ def get_url_from_origin_waypoints_and_destination(
     waypoints = coordinates_with_waypoints
     destination = str(destination)
     origin = str(origin)
-    return (
-        "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&waypoints={}"
-        "&key=AIzaSyDP0EV22kIb6LHSh3zEABMe1CTxwzwSdWs".format(
-            str(origin), str(destination), coordinate_to_str(waypoints)
-        )
-    )
+    return "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&waypoints={}" \
+           "&key={}&mode=Walking".format(str(origin),
+                                                                 str(destination),
+                                                                 coordinate_to_str(waypoints), GMAPS_API_KEY)
