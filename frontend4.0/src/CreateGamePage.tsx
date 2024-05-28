@@ -6,6 +6,7 @@ import InputLabel from "@mui/material/InputLabel";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BACKEND } from "./backend";
 
 const Container = styled("div")({
   backgroundImage: `url(${img})`,
@@ -33,7 +34,6 @@ const StyledSelect = styled(Select)({
   // margin: "10px",
 });
 const cities = ["London", "Tel Aviv"];
-const BACKEND = process.env.BACKEND || "http://localhost:8000";
 
 function CreateGamePage() {
   const [city, setCity] = useState<string>();
@@ -42,7 +42,7 @@ function CreateGamePage() {
   const handleChange = (event: SelectChangeEvent) => {
     setCity(event.target.value);
   };
-  const handleNameChange = (event) => {
+  const handleNameChange = event => {
     setName(event.target.value);
   };
 
@@ -57,7 +57,7 @@ function CreateGamePage() {
       {
         method: "PUT",
       }
-    ).then(async (response) => {
+    ).then(async response => {
       const newGameState = await response.json();
       console.log("newly created game", newGameState);
       navigate("/map", { state: { name: name, code: newGameState.game_id } });
@@ -68,28 +68,21 @@ function CreateGamePage() {
       {/* <InputLabel id="demo-simple-select-label">Barel</InputLabel> */}
       <ContentContainer>
         <StyledSelect
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
+          labelId='demo-simple-select-label'
+          id='demo-simple-select'
           value={city}
-          label="Barel"
-          variant="standard"
+          label='Barel'
+          variant='standard'
           // placeholder="Select a city"
           onChange={handleChange}
         >
-          {cities.map((city) => (
+          {cities.map(city => (
             <MenuItem value={city}>{city}</MenuItem>
           ))}
         </StyledSelect>
-        {city && (
-          <TextField
-            label="Name"
-            variant="filled"
-            value={name}
-            onChange={handleNameChange}
-          />
-        )}
+        {city && <TextField label='Name' variant='filled' value={name} onChange={handleNameChange} />}
         {city && name && (
-          <Button variant="contained" onClick={onCreate}>
+          <Button variant='contained' onClick={onCreate}>
             Create
           </Button>
         )}
