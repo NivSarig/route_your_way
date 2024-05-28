@@ -41,6 +41,7 @@ const MapWithPolyline = () => {
   const [polyline, setPolyline] = useState<{ lat: number; lng: number }[]>([]);
   const [pointsOrder, setPointsOrder] = useState<number[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   // const generateRandomPoints = useCallback(() => {
   //   const newMarkers: { lat: number; lng: number }[] = [];
@@ -76,10 +77,12 @@ const MapWithPolyline = () => {
 
   const onMarkerHover = useCallback(
     (index) => {
+      console.log("index", index);
+      console.log("marker", newMarkers[index]);
       if (isDrawing && !pointsOrder.includes(index)) {
         setPointsOrder((prevOrder) => [...prevOrder, index]);
+        setPolyline((prevPath) => [...prevPath, newMarkers[index]]);
       }
-      setPolyline((prevPath) => [...prevPath, newMarkers[index]]);
     },
     [isDrawing, pointsOrder]
   );
@@ -89,26 +92,34 @@ const MapWithPolyline = () => {
   // }, []);
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs">
+    <LoadScript
+      googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs"
+      // onLoad={() => setIsReady(true)}
+    >
       <GoogleMap
+        onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
         center={{ lat: 51.5074, lng: -0.1278 }} // Center on London
         zoom={10}
         // onClick={handleMapClick}
         onMouseUp={onMMouseUp}
+
         // options={{
         //   markerClusterer: null, // Disable marker clustering
         // }}
       >
-        {newMarkers.map((marker, index) => (
-          <Marker
-            onClick={onMarkerClick}
-            onMouseOver={onMarkerHover}
-            key={index}
-            position={marker}
-            text={`${index}`}
-          />
-        ))}
+        {
+          // isReady &&
+          newMarkers.map((marker, index) => (
+            <Marker
+              onClick={() => onMarkerClick(index)}
+              onMouseOver={() => onMarkerHover(index)}
+              key={index}
+              position={marker}
+              text={`${index}`}
+            />
+          ))
+        }
         {/* {markers.map((marker, index) => (
           <Marker {...marker} key={index} />
         ))} */}
