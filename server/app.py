@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 
-from game import add_contestant, create_game, get_game
+from game import add_contestant, add_submit, create_game, get_game
 
 
 app = FastAPI()
@@ -36,4 +36,15 @@ async def put_done(game_id: str = None):
 # endpoint that returns a game
 @app.get("/game/{game_id}")
 async def get_game_endpoint(game_id: str = None):
+    return get_game(game_id)
+
+@app.put("/game/{game_id}/submit/{url}")
+async def submit(game_id: str = None, name: str = None, url: str = None):
+    get_game(game_id)
+    if not name:
+        # create an exception
+        raise HTTPException(status_code=400, detail="Name cannot be empty")
+    if not url:
+        raise HTTPException(status_code=400, detail="URL cannot be empty")
+    add_submit(game_id, name, url)
     return get_game(game_id)

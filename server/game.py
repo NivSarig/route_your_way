@@ -18,24 +18,33 @@ def create_game(location, code=None):
     game_dict[new_game_id] = {
         "location": location,
         "game_id": new_game_id,
-        "contestants": [],
+        "contestants": {},
         "status": "running",
     }
 
     return get_game(new_game_id)
 
 
-def check_existing_name(game_id, name):
-    for contestant in game_dict[game_id]["contestants"]:
-        if contestant["name"] == name:
-            raise HTTPException(status_code=400, detail="Contestant already exists")
+def verify_existing_name(game_id, name):
+    if name not in get_game(game_id)["contestants"]:
+        raise HTTPException(status_code=400, detail="Contestant doesn't exists")
 
+def verify_unique_name(game_id, name):
+    if name in get_game(game_id)["contestants"]:
+        raise HTTPException(status_code=400, detail="Contestant already exists (name is taken)")
 
 def add_contestant(game_id, name):
-    check_existing_name(game_id, name)
+    verify_unique_name(game_id, name)
 
-    game_dict[game_id]["contestants"].append({"name": name})
+    game_dict[game_id]["contestants"][name] = {"name": name}
     return get_game(game_id)
 
+def add_submit(game_id, name, url):
+    curr_game = get_game(game_id)
+    verify_existing_name(game_id, name)
+    duration = 444 #get_duration(url)
+    curr_game["contestants"][name]["duration"] = duration
+    curr_game["contestants"][name]["url"] = url
+    return get_game(game_id)
 
 create_game("TEST", "TEST")
