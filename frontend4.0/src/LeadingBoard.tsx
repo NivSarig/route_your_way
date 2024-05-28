@@ -72,7 +72,7 @@ function LeadingBoard() {
         );
         setLeaderBoard(
           Object.values(newGameState.contestants)
-            .filter((c: Contestant) => c.distance === undefined)
+            .filter((c: Contestant) => c.distance !== undefined)
             .map((c: Contestant, i) => {
               return createData(i, c.name, c.duration, c.distance?.toString());
             })

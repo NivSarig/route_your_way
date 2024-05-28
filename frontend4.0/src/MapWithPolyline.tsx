@@ -201,11 +201,11 @@ const MapWithPolyline = () => {
         setPointsOrder([index]);
         setPolyline([markers[index]]);
       } else if (isDrawing && !pointsOrder.includes(index)) {
+        setPointsOrder((prevOrder) => [...prevOrder, index]);
         const route = await getRouteDistance(
           markers[pointsOrder[pointsOrder.length - 1]],
           markers[index]
         );
-        setPointsOrder((prevOrder) => [...prevOrder, index]);
         setTotalDistance((prevDistance) => prevDistance + route?.distance);
         setTotalMinutes((prevMinutes) => prevMinutes + route?.minutes);
         setPolyline((prevPath) => [...prevPath, ...route?.polyline]);
@@ -255,7 +255,7 @@ const MapWithPolyline = () => {
         <div
           style={{
             position: "absolute",
-            top: "90%",
+            bottom: "0%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             backgroundColor: "white",
