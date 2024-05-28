@@ -19,13 +19,13 @@ const Marker = ({ position, text, onClick, onMouseOver }) => {
       icon={{
         path: google.maps.SymbolPath.CIRCLE,
         scale: 6,
-        strokeColor: "red",
-        fillColor: "red",
+        strokeColor: "#396DFF",
+        fillColor: "#396DFF",
         fillOpacity: 1,
       }}
       label={{
         text: text || "",
-        color: "black",
+        color: "#271076",
         fontSize: "40px",
       }}
     />
