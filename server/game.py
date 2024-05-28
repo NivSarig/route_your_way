@@ -5,7 +5,7 @@ import sys, os
 
 sys.path.append(os.getcwd() + "/..")
 
-from external_integrations.gmaps_integration_utils import get_route_info_from_url
+from external_integrations.gmaps_integration_utils import get_distance_and_duration
 
 
 def get_game(game_id):
@@ -49,18 +49,18 @@ def add_contestant(game_id, name):
     return get_game(game_id)
 
 
-def add_submit(game_id, name, url):
+def add_submit(game_id, name, coordinates):
     curr_game = get_game(game_id)
     verify_existing_name(game_id, name)
     try:
-        distance, duration = get_route_info_from_url(url)
+        distance, duration = get_distance_and_duration(coordinates)
     except Exception as e:
         curr_game["contestants"][name]["status"] = "failed"
         curr_game["contestants"][name]["message"] = repr(e)
 
     curr_game["contestants"][name]["duration"] = duration
     curr_game["contestants"][name]["distance"] = distance
-    curr_game["contestants"][name]["url"] = url
+    curr_game["contestants"][name]["coordinates"] = coordinates
     curr_game["contestants"][name]["status"] = "done"
 
 

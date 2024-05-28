@@ -1,6 +1,6 @@
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from dotenv import load_dotenv
-
+from typing import List
 from game import add_contestant, add_submit, create_game, get_game
 
 
@@ -42,16 +42,16 @@ async def get_game_endpoint(game_id: str = None):
 
 
 @app.put("/game/{game_id}/submit")
-async def submit(game_id: str, name: str, url: str, background_tasks: BackgroundTasks):
+async def submit(game_id: str, name: str, coordinates: List[List[float]], background_tasks: BackgroundTasks):
     curr_game = get_game(game_id)
     if not name:
         # create an exception
         raise HTTPException(status_code=400, detail="Name cannot be empty")
-    if not url:
-        raise HTTPException(status_code=400, detail="URL cannot be empty")
+    if not coordinates:
+        raise HTTPException(status_code=400, detail="coordinates cannot be empty")
     curr_contestant = curr_game["contestants"][name]
     if "status" in curr_contestant and curr_contestant["status"] == "processing":
         raise HTTPException(status_code=400, detail="Contestant already submitted")
     curr_contestant["status"] = "processing"
-    background_tasks.add_task(add_submit, game_id, name, url)
+    background_tasks.add_task(add_submit, game_id, name, coordinates)
     return curr_game
