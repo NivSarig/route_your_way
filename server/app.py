@@ -1,11 +1,22 @@
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from dotenv import load_dotenv
 from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+
 from game import add_contestant, add_submit, create_game, get_game
 
 
 load_dotenv()
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -42,7 +53,12 @@ async def get_game_endpoint(game_id: str = None):
 
 
 @app.put("/game/{game_id}/submit")
-async def submit(game_id: str, name: str, coordinates: List[List[float]], background_tasks: BackgroundTasks):
+async def submit(
+    game_id: str,
+    name: str,
+    coordinates: List[List[float]],
+    background_tasks: BackgroundTasks,
+):
     curr_game = get_game(game_id)
     if not name:
         # create an exception
