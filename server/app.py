@@ -24,3 +24,16 @@ async def put_contestant(game_id: str = None, name: str = None):
         raise HTTPException(status_code=400, detail="Name cannot be empty")
     add_contestant(game_id, name)
     return get_game(game_id)
+
+
+@app.put("/game/{game_id}/done")
+async def put_done(game_id: str = None):
+    game = get_game(game_id)
+    game["status"] = "done"
+    return game
+
+
+# endpoint that returns a game
+@app.get("/game/{game_id}")
+async def get_game_endpoint(game_id: str = None):
+    return get_game(game_id)

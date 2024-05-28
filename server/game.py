@@ -19,6 +19,7 @@ def create_game(location, code=None):
         "location": location,
         "game_id": new_game_id,
         "contestants": [],
+        "status": "running",
     }
 
     return get_game(new_game_id)
