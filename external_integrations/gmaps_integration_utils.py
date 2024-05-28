@@ -1,44 +1,17 @@
-#!/usr/bin/env python
-# coding: utf-8
 import os
-
-# In[115]:
-
+import random
+from datetime import timedelta
 
 import requests
-from geopy.geocoders import Nominatim
-import random
-from datetime import datetime, timedelta
-
-api_key = os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
-DO_PRINT = False
-log_file_name = f'/home/niv/dev/route_your_way/log.log'
-COLOR_RED = "\033[91m"
-COLOR_GREEN = "\033[92m"
-COLOR_YELLOW = "\033[93m"
-COLOR_RESET = "\033[0m"  # Reset color to default
+from geopy import Nominatim
 
 
-def formatted_now(time_format='%Y:%m:%d-%H:%M:%S.%f'):
-    return datetime.now().strftime(time_format)
+GMAPS_API_KEY = os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
+URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}"
 
 
-def create_logger(log_file_name):
-    print(log_file_name)
-    open(log_file_name, 'w').close()
-
-    def log_func(msg, do_print=DO_PRINT, end="\n"):
-        if do_print:
-            print(msg, end=end)
-        with open(log_file_name, 'a+') as fid:
-            fid.write(f"{COLOR_RED}{formatted_now()}{COLOR_RESET}|{COLOR_GREEN}msg:{COLOR_RESET}{msg}\n")
-
-    return log_func
-
-
-log = create_logger(log_file_name)
-
-log(f"New run")
+def get_durations_from_url(gmaps_url):
+    pass
 
 
 def generate_random_coordinates(city, num_coordinates):
@@ -67,14 +40,19 @@ def generate_random_coordinates(city, num_coordinates):
     else:
         log("City not found or coordinates not available.", True)
 
-    coordinate_str = '/'.join(["%20".join([str(lat), str(lon)]) for (lat, lon) in coordinates])
-    last_coordinate = "%20".join([str(coordinates[-1][0]), str(coordinates[-1][1])])
-    url = "https://www.google.com/maps/dir/{}/@{},16.18z/data=!4m2!4m1!3e0?entry=ttu".format(
-        coordinate_str, last_coordinate)
+    url = get_url_from_coordinates(coordinates)
     log("url=", end=" ")
     log("{}".format(url))
 
     return url, coordinates
+
+
+def get_url_from_coordinates(coordinates):
+    coordinate_str = '/'.join(["%20".join([str(lat), str(lon)]) for (lat, lon) in coordinates])
+    last_coordinate = "%20".join([str(coordinates[-1][0]), str(coordinates[-1][1])])
+    url = "https://www.google.com/maps/dir/{}/@{},16.18z/data=!4m2!4m1!3e0?entry=ttu".format(
+        coordinate_str, last_coordinate)
+    return url
 
 
 def get_route_info(origin, destination):
@@ -82,7 +60,7 @@ def get_route_info(origin, destination):
         origin = ",".join(map(str, origin))
     if not isinstance(destination, str):
         destination = ",".join(map(str, destination))
-    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={destination}&key={api_key}"
+    url = URL_FORMAT.format(origin, destination, GMAPS_API_KEY)
     log(f"Fetching data from {url}")
     response = requests.get(url, timeout=1)
     data = response.json()
@@ -157,3 +135,18 @@ def coordinate_to_str(coordinate):
 def concatenate_coordinates(coordinates):
     result_string = [coordinate_to_str(coordinate) for coordinate in coordinates]
     return '|'.join(result_string)
+
+
+def get_route_info_from_url(new_url):
+    new_coordinates = get_coordinates_from_url(new_url)
+    return get_distance_and_duration(new_coordinates)
+
+
+def get_url_from_origin_waypoints_and_destination(origin, destination, coordinates_with_waypoints):
+    waypoints = coordinates_with_waypoints
+    destination = str(destination)
+    origin = str(origin)
+    return "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&waypoints={}" \
+           "&key=AIzaSyDP0EV22kIb6LHSh3zEABMe1CTxwzwSdWs".format(str(origin),
+                                                                 str(destination),
+                                                                 coordinate_to_str(waypoints))

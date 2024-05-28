@@ -1,4 +1,5 @@
 game_dict = {}
+import time
 from utils import generate_random_string
 from fastapi import HTTPException
 
@@ -45,6 +46,7 @@ def add_submit(game_id, name, url):
     duration = 444 #get_duration(url)
     curr_game["contestants"][name]["duration"] = duration
     curr_game["contestants"][name]["url"] = url
+    curr_game["contestants"][name]["status"] = "done"
     return get_game(game_id)
 
 create_game("TEST", "TEST")
