@@ -282,12 +282,7 @@ const MapWithPolyline = () => {
           <button disabled={!allPointsCovered()} onClick={onSubmit}>
             Submit
           </button>
-          <button
-            disabled={!allPointsCovered || gameState.status === "done"}
-            onClick={resetDrawing}
-          >
-            Reset
-          </button>
+          <button onClick={resetDrawing}>Reset</button>
         </div>
       </GoogleMap>
     </LoadScript>

@@ -82,6 +82,7 @@ function CreateGamePage() {
         </StyledSelect>
         {city && (
           <TextField
+            sx={{ backgroundColor: "white" }}
             label="Name"
             variant="filled"
             value={name}

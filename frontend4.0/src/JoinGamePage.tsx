@@ -32,11 +32,8 @@ const StyledSelect = styled(Select)({
   fontSize: "20px",
   // margin: "10px",
 });
-const cities = ["London", "Tel Aviv"];
-const BACKEND = process.env.BACKEND || "http://localhost:8000";
 
 function JoinGamePage() {
-  const [city, setCity] = useState<string>();
   const [name, setName] = useState<string>();
   const [code, setCode] = useState<string>();
 
@@ -50,42 +47,34 @@ function JoinGamePage() {
   const navigate = useNavigate();
 
   const onCreate = () => {
-    fetch(
-      `${BACKEND}/game?` +
-        new URLSearchParams({
-          location: city,
-        }),
-      {
-        method: "PUT",
-      }
-    ).then(async (response) => {
-      const newGameState = await response.json();
-      console.log("newly created game", newGameState);
-      navigate("/map", { state: { name: name, code: newGameState.game_id } });
-    });
+    navigate("/map", { state: { name, code } });
   };
   return (
     <Container>
       {/* <InputLabel id="demo-simple-select-label">Barel</InputLabel> */}
       <ContentContainer>
         <TextField
+          sx={{ backgroundColor: "white" }}
           label="Name"
           variant="filled"
           value={name}
           onChange={handleNameChange}
         />
         <TextField
+          sx={{ backgroundColor: "white" }}
           label="Code"
           variant="filled"
-          value={name}
+          value={code}
           onChange={handleCodeChange}
         />
 
-        {name && code && (
-          <Button disabled={!name} variant="contained" onClick={onCreate}>
-            Create
-          </Button>
-        )}
+        <Button
+          disabled={!name || !code}
+          variant="contained"
+          onClick={onCreate}
+        >
+          Join Game!
+        </Button>
       </ContentContainer>
     </Container>
   );
