@@ -1,11 +1,17 @@
 import React from "react";
 import { Marker as GoogleMapsMarker } from "@react-google-maps/api";
 
-const Marker = ({ position, text, onClick, onMouseOver, color }) => {
+const Marker = ({
+  position,
+  text,
+  onClick,
+  // onMouseOver,
+  color,
+}) => {
   return (
     <GoogleMapsMarker
       onClick={onClick}
-      onMouseOver={onMouseOver}
+      // onMouseOver={onMouseOver}
       position={position}
       zIndex={999}
       icon={{

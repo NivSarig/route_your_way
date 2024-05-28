@@ -5,7 +5,11 @@ from datetime import timedelta
 import requests
 from geopy import Nominatim
 
-GMAPS_API_KEY = os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
+
+def get_key():
+    return os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
+
+
 URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}&mode=walking"
 
 
@@ -61,8 +65,8 @@ def get_route_info(origin, destination):
         origin = ",".join(map(str, origin))
     if not isinstance(destination, str):
         destination = ",".join(map(str, destination))
-    url = URL_FORMAT.format(origin, destination, GMAPS_API_KEY)
-    print(f"Fetching data from {url}")
+    url = URL_FORMAT.format(origin, destination, get_key())
+    print(f"Fetching data from {url} {get_key()}")
     response = requests.get(url, timeout=1)
     data = response.json()
     print(f"Found data for {origin}, {destination}")
@@ -153,7 +157,9 @@ def get_url_from_origin_waypoints_and_destination(
     waypoints = coordinates_with_waypoints
     destination = str(destination)
     origin = str(origin)
-    return "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&waypoints={}" \
-           "&key={}&mode=Walking".format(str(origin),
-                                                                 str(destination),
-                                                                 coordinate_to_str(waypoints), GMAPS_API_KEY)
+    return (
+        "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&waypoints={}"
+        "&key={}&mode=Walking".format(
+            str(origin), str(destination), coordinate_to_str(waypoints), get_key()
+        )
+    )

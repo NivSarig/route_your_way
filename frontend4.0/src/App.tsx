@@ -12,6 +12,7 @@ import {
 import LandingPage from "./LandingPage";
 import LeadingBoard from "./LeadingBoard";
 import CreateGamePage from "./CreateGamePage";
+import JoinGamePage from "./JoinGamePage";
 
 function App() {
   return (
@@ -19,9 +20,10 @@ function App() {
       <Router>
         <Routes>
           <Route path="/map" element={<MapWithPolyline />}></Route>
-          <Route path="/" element={<LandingPage />}></Route>
+          <Route path="/" element={<JoinGamePage />}></Route>
           <Route path="/LeadingBoard" element={<LeadingBoard />}></Route>
           <Route path="/create" element={<CreateGamePage />}></Route>
+          <Route path="/join" element={<JoinGamePage />}></Route>
         </Routes>
       </Router>
     </div>

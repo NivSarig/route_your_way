@@ -12,26 +12,20 @@ interface Data {
   name: string;
   time: string; // duration
   distance: string;
+  link: string;
 }
 
 type Contestant = {
   name: string;
   distance: number;
   duration: string;
+  coordinates: [number[]];
 };
 
-const createData = (rank: number, name: string, time: string, distance: string): Data => {
-  return { rank, name, time, distance };
+const createData = (rank: number, name: string, time: string, distance: string, coordinates: [number[]]): Data => {
+  const link = "https://www.google.com/maps/dir/" + coordinates.map(c => c.join(",")).join("/");
+  return { rank, name, time, distance, link };
 };
-
-const rows = [
-  createData(1, "Lital", "0:18:15", "3.904"),
-  createData(2, "Gony", "0:20:00", "5.15"),
-  createData(3, "Niv", "0:21:00", "5.5"),
-  createData(4, "Nir", "0:21:00", "5.5"),
-  createData(5, "Barel", "0:21:00", "5.5"),
-  createData(6, "Noa", "0:22:00", "5.7"),
-];
 
 const Container = styled("div")({
   backgroundImage: `url(${img})`,
@@ -56,12 +50,15 @@ function LeadingBoard() {
           return a.distance - b.distance;
         });
         setLeaderBoard(
-          Object.values(newGameState.contestants).map((c: Contestant, i) => {
-            return createData(i, c.name, c.duration, c.distance.toString());
-          })
+          sorted
+            .filter((c: Contestant) => c.distance !== undefined)
+            .map((c: Contestant, i) => {
+              return createData(i, c.name, c.duration, c.distance?.toString(), c.coordinates);
+            })
         );
       });
     };
+    poll();
     setInterval(poll, 5000);
   }, [location.state.code]);
 
@@ -86,6 +83,9 @@ function LeadingBoard() {
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.time}</TableCell>
                 <TableCell>{row.distance}</TableCell>
+                <TableCell>
+                  <a href={row.link}>Maps</a>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
