@@ -1,6 +1,4 @@
-from external_integrations.gmaps_integration_utils import generate_random_coordinates, build_all_duration_matrix, \
-    coordinate_to_str, \
-    get_route_info_from_url, get_url_from_origin_waypoints_and_destination
+from external_integrations.gmaps_integration_utils import generate_random_coordinates, get_url_from_coordinates
 import requests
 
 from external_integrations.optimization_engine_utils import solve_tsp_from_coordinate_list
@@ -29,33 +27,64 @@ if __name__ == "__main__":
     log(coordinates)
 
     new_url = "https://www.google.com/maps/dir/55.78879096471749+37.56912052075894/55.82394492336372+37.71564443590594/55.718563249961306+37.51647539470249/55.775807492867564+37.51946053900027/55.690901822366115+37.46013158008646/55.80069715769361+37.56576992130943/55.60486832825113+37.466155203107114/55.78130697817363+37.46718729666109/55.70319444748+37.63345154478967/55.843094719260534+37.47741722330984/@55.7272268,37.3982661,11z/data=!3m1!4b1!4m62!4m61!1m5!1m1!1s0x0:0xfebb1ddabbd58077!2m2!1d37.5685818!2d55.7885064!1m5!1m1!1s0x0:0x865d4de12b4564b6!2m2!1d37.716047!2d55.8236744!1m5!1m1!1s0x0:0x5df7cd41dca8f173!2m2!1d37.5139163!2d55.7061335!1m5!1m1!1s0x0:0x8439f8542df1d9a4!2m2!1d37.5198347!2d55.7759439!1m5!1m1!1s0x0:0xd0422de2cbc7203f!2m2!1d37.4600474!2d55.6907233!1m5!1m1!1s0x0:0x9e8663cc32912aa7!2m2!1d37.5659516!2d55.8008145!1m5!1m1!1s0x0:0x23dd95533621b43b!2m2!1d37.4623676!2d55.6028596!1m5!1m1!1s0x0:0x76d30e134b59d2a1!2m2!1d37.4773823!2d55.7750483!1m5!1m1!1s0x0:0xfd468a8f9cf66ed8!2m2!1d37.6333575!2d55.7028242!1m5!1m1!1s0x0:0xa0c2634c7f03102d!2m2!1d37.4773427!2d55.8429622!3e0?entry=ttu"
-    distance, duration = get_route_info_from_url(new_url)
-    log((distance, duration))
+    # distance, duration = get_route_info_from_url(new_url)
+    # log((distance, duration))
 
     short_coordinates = [
         (55.8851468503753, 37.51883085420433),
-        (55.64084712224211, 37.63753714586377)]
+        (55.64084712224211, 37.63753714586377),
+    ]
+    locations = {
+        "Short": [
+        (55.8851468503753, 37.51883085420433),
+        (55.64084712224211, 37.63753714586377),
+    ],
+        "Tel Aviv": [
+            [32.0732507, 34.7894517],
+            [32.0694666, 34.7699549],
+            [32.0737261, 34.765359],
+            [32.1145883, 34.8015212],
+            [32.0779325, 34.7741353],
+            [32.0610971, 34.7919043],
+            [32.0810915, 34.7889161],
+            [32.0633681, 34.7728317],
+            [32.0728065, 34.7948381]
+        ],
+        "London": [
+            [51.5229532, -0.0805527],
+            [51.5190351, -0.0704977],
+            [51.5289369, -0.0620099],
+            [51.5163462, -0.0468525],
+            [51.5322395, -0.0882468],
+            [51.5083975, -0.07886],
+            [51.5205595, -0.0380812],
+            [51.5227271, -0.0925782],
+            [51.5368766, -0.0945162],
+            [51.512813, -0.0836868],
+            [51.515942, -0.0908033],
+        ]
+    }
+    game_id = "London"
+    game_id = "Tel Aviv"
+    # game_id = "Short"
+    short_coordinates = locations[game_id]
+    import time
+    start_time = time.time()
+    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
+    print(stops)
+    print(time.time() - start_time)
 
-    game_id = "game_id"
-    stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
-    log(stops)
+    coordinates = []
+    for stop in stops:
+        coordinates.append(tuple(deadhead_index[stop][stops[0]]['origin']))
 
-    origin = (55.70319444748, 37.63345154478967)
-    destination = (55.843094719260534, 37.47741722330984)
-    waypoints = [
-        (55.76256915886491, 37.53964491245408),
-        (55.79953159156407, 37.62388899803995),
-        (55.82000118014139, 37.531695602671846)]
-    coordinate_to_str(origin)
-    coordinate_to_str(destination)
-    coordinates_with_waypoints = "https://maps.googleapis.com/maps/api/directions/json?origin=55.70319444748,37.63345154478967&destination=55.843094719260534,37.47741722330984&waypoints=55.76256915886491,37.53964491245408|55.79953159156407,37.62388899803995|55.82000118014139,37.531695602671844&key=AIzaSyDP0EV22kIb6LHSh3zEABMe1CTxwzwSdWs"
-    url_with_waypoints = get_url_from_origin_waypoints_and_destination(origin, destination, coordinates_with_waypoints)
-    print(url_with_waypoints)
-    waypoints_str = '55.76256915886491,37.53964491245408|55.79953159156407,37.62388899803995|55.82000118014139,37.531695602671844'
-    [tuple(map(float, waypoint.split(','))) for waypoint in waypoints_str.split('|')]
-
-    log(formatted_now("%H:%M:%S.%f"))
-
-    # The model solver does not work (yet)
-    # solve_tsp_model(deadhead_index)
+    # origin = (55.70319444748, 37.63345154478967)
+    # destination = (55.843094719260534, 37.47741722330984)
+    # waypoints = [
+    #     (55.76256915886491, 37.53964491245408),
+    #     (55.79953159156407, 37.62388899803995),
+    #     (55.82000118014139, 37.531695602671846)]
+    # coordinates = [origin] + waypoints + [destination]
+    url = get_url_from_coordinates(coordinates)
+    print(url)
 

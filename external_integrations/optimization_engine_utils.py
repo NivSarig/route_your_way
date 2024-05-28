@@ -1,32 +1,69 @@
 import os
 import shutil
-from tempfile import gettempdir
+import time
+from random import random
+import json
 
-from external_integrations.gmaps_integration_utils import build_all_duration_matrix
+from external_integrations.gmaps_integration_utils import build_all_duration_matrix, pairwise
 
-MOCK = True
+MOCK = "brute"
+# MOCK = True
 
 
 def solve_tsp_from_coordinate_list(coordinates_list, game_id):
-    deadhead_index = build_all_duration_matrix(coordinates_list)
 
-    return solve_tsp_for_deadhead_index(deadhead_index, game_id)
+    game_directory = os.path.join(os.getcwd(), "server", game_id)
+    if not os.path.exists(game_directory):
+        os.mkdir(game_directory)
+
+    deadhead_file_path = os.path.join(game_directory, "deadhead_index_{}.json".format(game_id))
+    if not os.path.exists(deadhead_file_path):
+        deadhead_index = build_all_duration_matrix(coordinates_list)
+
+        with open(deadhead_file_path, 'w') as fid:
+            json.dump(deadhead_index, fid)
+    with open(deadhead_file_path, 'r') as fid:
+        deadhead_index = json.load(fid)
+    return deadhead_index, solve_tsp_for_deadhead_index(deadhead_index, game_directory, mock=MOCK)
 
 
-def solve_tsp_for_deadhead_index(deadhead_index, game_id):
-    tmp_dir = gettempdir()
-    game_dir = os.path.join(tmp_dir, game_id)
+def solve_tsp_for_deadhead_index(deadhead_index, game_dir, mock):
     if not os.path.exists(game_dir):
         os.mkdir(game_dir)
     input_file_name = os.path.join(game_dir, "input.tsp")
     output_file_name = os.path.join(game_dir, "output.txt")
-    if MOCK:
-        shutil.copy(os.path.join(os.path.expanduser('~'), "dev/route_your_way/external_integrations/optimization_engine", "test.txt"), output_file_name)
-        shutil.copy(os.path.join(os.path.expanduser('~'), "dev/route_your_way/external_integrations/optimization_engine/examples", "hk48.tsp"), input_file_name)
+    if os.path.exists(output_file_name) and mock is not False:
+        time.sleep(1.5 + random())
+        with open(output_file_name, 'r') as fid:
+            return fid.read().split('\n')
+
+    if mock is True:
+        shutil.copy(os.path.join(os.path.expanduser('~'),
+                                 "dev/route_your_way/external_integrations/optimization_engine", "test.txt"),
+                    output_file_name)
+        shutil.copy(os.path.join(os.path.expanduser('~'),
+                                 "dev/route_your_way/external_integrations/optimization_engine/examples", "hk48.tsp"),
+                    input_file_name)
         with open(output_file_name, 'r') as fid:
             return list(map(int, fid.read().split('\n')[:-1]))
-    print(deadhead_index)
-    raise ValueError("Not yet implemented")
+    if mock == "brute":
+        all_stop_indices = list(deadhead_index.keys())
+        import itertools
+        # Generate all permutations
+        permutations = itertools.permutations(all_stop_indices)
+        best_duration = float('inf')
+        best_perm = None
+        for permutation in permutations:
+            perm_duration = 0
+            for perm_pair in pairwise(permutation):
+                perm_duration += deadhead_index[str(perm_pair[0])][str(perm_pair[1])]['duration']
+            if perm_duration < best_duration:
+                best_duration = perm_duration
+                best_perm = permutation
+        indices = list(best_perm)
+        with open(output_file_name, 'w') as fid:
+            fid.write('\n'.join(indices))
+        return indices
 
 
 if __name__ == "__main__":
