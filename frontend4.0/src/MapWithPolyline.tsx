@@ -69,6 +69,17 @@ const MapWithPolyline = () => {
     });
   }, [location.state.code]);
 
+  const onSubmit = () => {
+    fetch(`${BACKEND}/game/${gameState.game_id}/submit?name=${location.state.name}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pointsOrder),
+    });
+  };
+
   // Starting the user path drawing
   const onMarkerClick = useCallback(
     index => {
@@ -160,7 +171,7 @@ const MapWithPolyline = () => {
     [getRouteDistance, isDrawing, pointsOrder, markers]
   );
 
-  const isGameFinished = useCallback(() => {
+  const allPointsCovered = useCallback(() => {
     return pointsOrder.length === markers.length;
   }, [pointsOrder.length, markers]);
 
@@ -212,9 +223,12 @@ const MapWithPolyline = () => {
           <br />
           {formatTime(Math.round(totalMinutes))}
           <br />
-          {isGameFinished() && <span style={{ color: "red" }}>Game Over!</span>}
+          {allPointsCovered() && <span style={{ color: "red" }}>Game Over!</span>}
           <br />
           {gameState.game_id}
+          <button disabled={!allPointsCovered} onClick={onSubmit}>
+            Submit
+          </button>
         </div>
       </GoogleMap>
     </LoadScript>

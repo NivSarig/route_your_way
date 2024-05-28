@@ -52,10 +52,11 @@ def add_contestant(game_id, name):
     return get_game(game_id)
 
 
-def add_submit(game_id, name, coordinates):
+def add_submit(game_id, name, indexes):
     curr_game = get_game(game_id)
     verify_existing_name(game_id, name)
     try:
+        coordinates = [curr_game["location"]["coordinates"][i] for i in indexes]
         distance, duration = get_distance_and_duration(coordinates)
     except Exception as e:
         curr_game["contestants"][name]["status"] = "failed"

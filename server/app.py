@@ -56,18 +56,18 @@ async def get_game_endpoint(game_id: str = None):
 async def submit(
     game_id: str,
     name: str,
-    coordinates: List[List[float]],
+    indexes: List[int],
     background_tasks: BackgroundTasks,
 ):
     curr_game = get_game(game_id)
     if not name:
         # create an exception
         raise HTTPException(status_code=400, detail="Name cannot be empty")
-    if not coordinates:
+    if not indexes:
         raise HTTPException(status_code=400, detail="coordinates cannot be empty")
     curr_contestant = curr_game["contestants"][name]
     if "status" in curr_contestant and curr_contestant["status"] == "processing":
         raise HTTPException(status_code=400, detail="Contestant already submitted")
     curr_contestant["status"] = "processing"
-    background_tasks.add_task(add_submit, game_id, name, coordinates)
+    background_tasks.add_task(add_submit, game_id, name, indexes)
     return curr_game
