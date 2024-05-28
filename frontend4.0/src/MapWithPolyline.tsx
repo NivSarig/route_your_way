@@ -9,7 +9,6 @@ import Marker from "./Marker";
 import Polyline from "./Polyline";
 // import  styled from "styled-components";
 import { useLocation } from "react-router-dom";
-import { set } from "date-fns";
 
 const BACKEND = process.env.BACKEND || "http://localhost:8000";
 // import styled from "styled-components";
@@ -87,6 +86,16 @@ const MapWithPolyline = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(pointsOrder),
+    });
+  };
+
+  const onEndGame = () => {
+    fetch(`${BACKEND}/game/${gameState.game_id}/done`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     });
   };
 
@@ -236,9 +245,10 @@ const MapWithPolyline = () => {
           {allPointsCovered() && <span style={{ color: "red" }}>Game Over!</span>}
           <br />
           {gameState.game_id}
-          <button disabled={!allPointsCovered} onClick={onSubmit}>
+          <button disabled={!allPointsCovered || gameState.status === "done"} onClick={onSubmit}>
             Submit
           </button>
+          <button onClick={onEndGame}>End Game</button>
         </div>
       </GoogleMap>
     </LoadScript>
