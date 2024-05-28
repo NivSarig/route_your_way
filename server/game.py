@@ -1,7 +1,11 @@
 game_dict = {}
-import time
 from utils import generate_random_string
 from fastapi import HTTPException
+import sys, os
+
+sys.path.append(os.getcwd() + "/..")
+
+from external_integrations.gmaps_integration_utils import get_route_info_from_url
 
 
 def get_game(game_id):
@@ -30,9 +34,13 @@ def verify_existing_name(game_id, name):
     if name not in get_game(game_id)["contestants"]:
         raise HTTPException(status_code=400, detail="Contestant doesn't exists")
 
+
 def verify_unique_name(game_id, name):
     if name in get_game(game_id)["contestants"]:
-        raise HTTPException(status_code=400, detail="Contestant already exists (name is taken)")
+        raise HTTPException(
+            status_code=400, detail="Contestant already exists (name is taken)"
+        )
+
 
 def add_contestant(game_id, name):
     verify_unique_name(game_id, name)
@@ -40,13 +48,20 @@ def add_contestant(game_id, name):
     game_dict[game_id]["contestants"][name] = {"name": name}
     return get_game(game_id)
 
+
 def add_submit(game_id, name, url):
     curr_game = get_game(game_id)
     verify_existing_name(game_id, name)
-    duration = 444 #get_duration(url)
+    try:
+        distance, duration = get_route_info_from_url(url)
+    except Exception as e:
+        curr_game["contestants"][name]["status"] = "failed"
+        curr_game["contestants"][name]["message"] = repr(e)
+
     curr_game["contestants"][name]["duration"] = duration
+    curr_game["contestants"][name]["distance"] = distance
     curr_game["contestants"][name]["url"] = url
     curr_game["contestants"][name]["status"] = "done"
-    return get_game(game_id)
+
 
 create_game("TEST", "TEST")

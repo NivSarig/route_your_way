@@ -1,12 +1,10 @@
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from dotenv import load_dotenv
 
-import sys, os
 from game import add_contestant, add_submit, create_game, get_game
 
-sys.path.append(os.getcwd() + "/..")
 
-from external_integrations.gmaps_integration_utils import generate_random_coordinates
-
+load_dotenv()
 app = FastAPI()
 
 
@@ -43,7 +41,7 @@ async def get_game_endpoint(game_id: str = None):
     return get_game(game_id)
 
 
-@app.put("/game/{game_id}/submit/{url}")
+@app.put("/game/{game_id}/submit")
 async def submit(game_id: str, name: str, url: str, background_tasks: BackgroundTasks):
     curr_game = get_game(game_id)
     if not name:
