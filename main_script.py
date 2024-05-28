@@ -3,6 +3,7 @@ from external_integrations.gmaps_integration_utils import generate_random_coordi
     get_route_info_from_url, get_url_from_origin_waypoints_and_destination
 import requests
 
+from external_integrations.optimization_engine_utils import solve_tsp_from_coordinate_list
 from logging_utils import log, formatted_now
 
 if __name__ == "__main__":
@@ -34,9 +35,10 @@ if __name__ == "__main__":
     short_coordinates = [
         (55.8851468503753, 37.51883085420433),
         (55.64084712224211, 37.63753714586377)]
-    deadhead_index = build_all_duration_matrix(short_coordinates)
 
-    log(deadhead_index)
+    game_id = "game_id"
+    stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
+    log(stops)
 
     origin = (55.70319444748, 37.63345154478967)
     destination = (55.843094719260534, 37.47741722330984)
@@ -48,20 +50,7 @@ if __name__ == "__main__":
     coordinate_to_str(destination)
     coordinates_with_waypoints = "https://maps.googleapis.com/maps/api/directions/json?origin=55.70319444748,37.63345154478967&destination=55.843094719260534,37.47741722330984&waypoints=55.76256915886491,37.53964491245408|55.79953159156407,37.62388899803995|55.82000118014139,37.531695602671844&key=AIzaSyDP0EV22kIb6LHSh3zEABMe1CTxwzwSdWs"
     url_with_waypoints = get_url_from_origin_waypoints_and_destination(origin, destination, coordinates_with_waypoints)
-    print(url)
-    response = requests.get(url_with_waypoints, timeout=1)
-    data = response.json()
-    for item in data['routes'][0]['legs']:
-        cum_distance = 0
-        cum_duration = 0
-        for step in item['steps']:
-            cum_distance += step['distance']['value']
-            cum_duration += step['duration']['value']
-        item_distance = item['distance']['value']
-        item_duration = item['duration']['value']
-        print(cum_distance, item_distance)
-        print(cum_duration, item_duration)
-
+    print(url_with_waypoints)
     waypoints_str = '55.76256915886491,37.53964491245408|55.79953159156407,37.62388899803995|55.82000118014139,37.531695602671844'
     [tuple(map(float, waypoint.split(','))) for waypoint in waypoints_str.split('|')]
 
