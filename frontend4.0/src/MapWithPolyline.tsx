@@ -9,6 +9,7 @@ import Marker from "./Marker";
 import Polyline from "./Polyline";
 // import  styled from "styled-components";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const BACKEND = process.env.BACKEND || "http://localhost:8000";
 // import styled from "styled-components";
@@ -44,6 +45,7 @@ someRandomMarkers.push({ lat: 51.518412, lng: -0.125755 });
 
 const MapWithPolyline = () => {
   // const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
+  const navigate = useNavigate();
   const [polyline, setPolyline] = useState<{ lat: number; lng: number }[]>([]);
   const [pointsOrder, setPointsOrder] = useState<number[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -86,16 +88,8 @@ const MapWithPolyline = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(pointsOrder),
-    });
-  };
-
-  const onEndGame = () => {
-    fetch(`${BACKEND}/game/${gameState.game_id}/done`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+    }).then(() => {
+      navigate("/LeadingBoard", { state: { code: gameState.game_id } });
     });
   };
 
@@ -248,7 +242,6 @@ const MapWithPolyline = () => {
           <button disabled={!allPointsCovered || gameState.status === "done"} onClick={onSubmit}>
             Submit
           </button>
-          <button onClick={onEndGame}>End Game</button>
         </div>
       </GoogleMap>
     </LoadScript>
