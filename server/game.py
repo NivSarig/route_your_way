@@ -8,6 +8,7 @@ sys.path.append(os.getcwd() + "/..")
 from external_integrations.gmaps_integration_utils import get_distance_and_duration
 from locations import locations
 
+
 def get_game(game_id):
     # throw exception if game_id doesn't exist
     if game_id not in game_dict:
@@ -23,10 +24,7 @@ def create_game(location, code=None):
         raise HTTPException(status_code=400, detail="Location doesn't exists")
 
     game_dict[new_game_id] = {
-        "location": {
-            "name": location,
-            "coordinates": locations[location]
-        },
+        "location": {"name": location, "coordinates": locations[location]},
         "game_id": new_game_id,
         "contestants": {},
         "status": "running",

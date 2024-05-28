@@ -9,6 +9,7 @@ import Marker from "./Marker";
 import Polyline from "./Polyline";
 // import  styled from "styled-components";
 import { useLocation } from "react-router-dom";
+import { set } from "date-fns";
 
 const BACKEND = process.env.BACKEND || "http://localhost:8000";
 // import styled from "styled-components";
@@ -34,14 +35,13 @@ const londonBounds = {
   west: -0.5087,
   east: 0.2334,
 };
-const newMarkers: { lat: number; lng: number }[] = [];
+const someRandomMarkers: { lat: number; lng: number }[] = [];
 for (let i = 0; i < 10; i++) {
   const lat = londonBounds.south + Math.random() * (londonBounds.north - londonBounds.south);
   const lng = londonBounds.west + Math.random() * (londonBounds.east - londonBounds.west);
-  newMarkers.push({ lat, lng });
+  someRandomMarkers.push({ lat, lng });
 }
-newMarkers.push({ lat: 51.518412, lng: -0.125755 });
-console.log("newMarkers", newMarkers);
+someRandomMarkers.push({ lat: 51.518412, lng: -0.125755 });
 
 const MapWithPolyline = () => {
   // const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
@@ -51,6 +51,8 @@ const MapWithPolyline = () => {
   const [isReady, setIsReady] = useState(false);
   const [totalDistance, setTotalDistance] = useState(0);
   const [totalMinutes, setTotalMinutes] = useState(0);
+  const [markers, setMarkers] = useState(someRandomMarkers);
+
   let location = useLocation();
   const [gameState, setGameState] = useState({} as any);
   useEffect(() => {
@@ -61,15 +63,21 @@ const MapWithPolyline = () => {
       const newGameState = await response.json();
       console.log("game state", newGameState);
       setGameState(newGameState);
+      setMarkers(
+        newGameState.location.coordinates.map((coord: [number, number]) => ({ lat: coord[0], lng: coord[1] }))
+      );
     });
   }, [location.state.code]);
 
   // Starting the user path drawing
-  const onMarkerClick = useCallback(index => {
-    setIsDrawing(true);
-    setPointsOrder([index]);
-    setPolyline([newMarkers[index]]);
-  }, []);
+  const onMarkerClick = useCallback(
+    index => {
+      setIsDrawing(true);
+      setPointsOrder([index]);
+      setPolyline([markers[index]]);
+    },
+    [markers]
+  );
 
   const onMMouseUp = useCallback(index => {
     setIsDrawing(false);
@@ -140,21 +148,21 @@ const MapWithPolyline = () => {
   const onMarkerHover = useCallback(
     async index => {
       console.log("index", index);
-      console.log("marker", newMarkers[index]);
+      console.log("marker", markers[index]);
       if (isDrawing && !pointsOrder.includes(index)) {
         setPointsOrder(prevOrder => [...prevOrder, index]);
-        const route = await getRouteDistance(newMarkers[pointsOrder[pointsOrder.length - 1]], newMarkers[index]);
+        const route = await getRouteDistance(markers[pointsOrder[pointsOrder.length - 1]], markers[index]);
         setTotalDistance(prevDistance => prevDistance + route?.distance);
         setTotalMinutes(prevMinutes => prevMinutes + route?.minutes);
         setPolyline(prevPath => [...prevPath, ...route?.polyline]);
       }
     },
-    [getRouteDistance, isDrawing, pointsOrder]
+    [getRouteDistance, isDrawing, pointsOrder, markers]
   );
 
   const isGameFinished = useCallback(() => {
-    return pointsOrder.length === newMarkers.length;
-  }, [pointsOrder.length]);
+    return pointsOrder.length === markers.length;
+  }, [pointsOrder.length, markers]);
 
   const formatTime = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
@@ -167,7 +175,7 @@ const MapWithPolyline = () => {
       <GoogleMap
         onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
-        center={{ lat: 51.5074, lng: -0.1278 }} // Center on London
+        center={markers[0]} // Center on London
         zoom={10}
         // onClick={handleMapClick}
         onMouseUp={onMMouseUp}
@@ -175,7 +183,7 @@ const MapWithPolyline = () => {
       >
         {
           // isReady &&
-          newMarkers.map((marker, index) => (
+          markers.map((marker, index) => (
             <Marker
               onClick={() => onMarkerClick(index)}
               onMouseOver={() => onMarkerHover(index)}
@@ -205,6 +213,8 @@ const MapWithPolyline = () => {
           {formatTime(Math.round(totalMinutes))}
           <br />
           {isGameFinished() && <span style={{ color: "red" }}>Game Over!</span>}
+          <br />
+          {gameState.game_id}
         </div>
       </GoogleMap>
     </LoadScript>
