@@ -10,6 +10,7 @@ import {
   useRoutes,
 } from "react-router-dom";
 import LandingPage from "./LandingPage";
+import LeadingBoard from "./LeadingBoard";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/map" element={<MapWithPolyline />}></Route>
           <Route path="/" element={<LandingPage />}></Route>
+          <Route path="/LeadingBoard" element={<LeadingBoard />}></Route>
         </Routes>
       </Router>
     </div>
