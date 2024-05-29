@@ -5,7 +5,9 @@ import sys, os
 
 sys.path.append(os.getcwd() + "/..")
 
-from external_integrations.optimization_engine_utils import get_distance_and_duration_from_game_id
+from external_integrations.optimization_engine_utils import (
+    get_distance_and_duration_from_game_id,
+)
 from external_integrations.gmaps_integration_utils import get_distance_and_duration
 from locations import locations
 
@@ -30,22 +32,26 @@ def create_game(location, code, background_tasks: BackgroundTasks):
         "contestants": {},
         "status": "running",
     }
-    if (background_tasks is not None):
+    if background_tasks is not None:
         background_tasks.add_task(solve, new_game_id, location, locations[location])
 
     return get_game(new_game_id)
 
+
 def solve(game_id, location, coordinates):
     # call to mock solutoin
     get_distance_and_duration_from_game_id
-    url, distance, duration, coordinates_solution = get_distance_and_duration_from_game_id(coordinates, location)
-    #print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
-    game_dict[game_id].solution = {
+    url, distance, duration, coordinates_solution = (
+        get_distance_and_duration_from_game_id(coordinates, location)
+    )
+    # print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
+    game_dict[game_id]["solution"] = {
         "url": url,
         "distance": distance,
         "duration": duration,
-        "coordinates": coordinates_solution
+        "coordinates": coordinates_solution,
     }
+
 
 def verify_existing_name(game_id, name):
     if name not in get_game(game_id)["contestants"]:

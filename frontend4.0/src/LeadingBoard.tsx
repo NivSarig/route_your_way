@@ -102,12 +102,12 @@ function LeadingBoard() {
       });
     };
     poll();
-    setInterval(poll, 5000);
+    setInterval(poll, 3000);
   }, [location.state.code]);
 
-  const algoTime = "0:18:15";
-  const algoDistance = "3.904";
-  const algoLink = "https://www.google.com/maps/dir/32.0853,34.7818";
+  const algoTime = gameState?.solution?.duration;
+  const algoDistance = gameState?.solution?.distance;
+  const algoLink = coordinatesToLink(gameState?.solution?.coordinates || []);
 
   return (
     <Container>
