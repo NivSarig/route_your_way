@@ -26,7 +26,7 @@ def create_logger(log_file_name):
 
 
 log = create_logger(log_file_name)
-
-log(f"New run")
+#
+# log(f"New run")
 
 
