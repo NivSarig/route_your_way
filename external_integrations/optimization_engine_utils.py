@@ -7,8 +7,7 @@ import json
 from external_integrations.gmaps_integration_utils import build_all_duration_matrix, pairwise
 
 MOCK = "brute"
-# MOCK = True
-# MOCK = False
+MOCK = False
 
 
 def solve_tsp_from_coordinate_list(coordinates_list, game_id):
@@ -38,15 +37,6 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
         with open(output_file_name, 'r') as fid:
             return fid.read().split('\n')
 
-    if mock is True:
-        shutil.copy(os.path.join(os.path.expanduser('~'),
-                                 "dev/route_your_way/external_integrations/optimization_engine", "test.txt"),
-                    output_file_name)
-        shutil.copy(os.path.join(os.path.expanduser('~'),
-                                 "dev/route_your_way/external_integrations/optimization_engine/examples", "hk48.tsp"),
-                    input_file_name)
-        with open(output_file_name, 'r') as fid:
-            return list(map(int, fid.read().split('\n')[:-1]))
     if mock == "brute":
         all_stop_indices = list(deadhead_index.keys())
         import itertools
@@ -68,8 +58,8 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     # Make a symmetric TSP out of the asymmetric problem we have
     dimension = len(deadhead_index)
     tsp_dimension = dimension * 2
-    INF = 'INF' #str(1000000)
-    mINF = '-INF' # str(-1000000)
+    INF = 'INF'
+    mINF = '-INF'
     durations = [[INF] * tsp_dimension for __ in range(tsp_dimension)]
     for k1 in range(dimension):
         for k2 in range(dimension):
@@ -101,8 +91,15 @@ EDGE_WEIGHT_SECTION
 {}
 EOF""".format(game_id, tsp_dimension, duration_str)
 
-    with open(os.path.join(game_dir, "input.tsp"), "w") as fid:
+    with open(input_file_name, "w") as fid:
         fid.write(file_content)
     print(file_content)
-    pass
 
+    os.system("python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
+        input_file_name, output_file_name))
+    with open(output_file_name, 'r') as fid:
+        return fid.read().split('\n')
+
+
+if __name__ == "__main__":
+    pass
