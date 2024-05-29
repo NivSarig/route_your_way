@@ -36,8 +36,9 @@ const SubmitButton = styled(Button)`
   bottom: 20px;
   right: 20px;
   padding: 10px 20px;
-  background: radial-gradient(circle, #4d9eff, #0065ff);
   color: white;
+  background: linear-gradient(to right bottom, #4100fd, #2a0680);
+  color: aliceblue;
   border: none;
   border-radius: 20px;
   font-size: 16px;
@@ -50,7 +51,8 @@ position: absolute;
   bottom: 20px;
   left: 20px;
   padding: 10px 20px;
-  background: radial-gradient(circle, #FF2C95, #ff76d8);
+  color: white;
+  background: linear-gradient(to right bottom, #FF2C95, #ff76d8);
   color: white;
   border: none;
   border-radius: 20px;
@@ -303,8 +305,6 @@ const MapWithPolyline = () => {
           Submit
         </SubmitButton>
         <ResetButton
-          variant="contained"
-          color="primary"
           onClick={resetDrawing}
           sx={{ marginRight: 1 }}
         >
