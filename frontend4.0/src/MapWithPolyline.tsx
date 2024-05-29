@@ -298,6 +298,23 @@ const MapWithPolyline = () => {
     return `${km} KM, ${m} M`;
   };
 
+  const centerAndZoom = useCallback(() => {
+    const padding = 50; // Adjust the padding as needed
+    const bbox = boundingBox();
+    const center = {
+      lat: (bbox.north + bbox.south) / 2,
+      lng: (bbox.east + bbox.west) / 2,
+    };
+    const latDiff = Math.abs(bbox.north - bbox.south);
+    const lngDiff = Math.abs(bbox.east - bbox.west);
+    const maxDiff = Math.max(latDiff, lngDiff);
+    const zoom = Math.floor(
+      Math.log2((window.innerWidth - padding) / maxDiff) - 1
+    );
+    return {center, zoom};
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boundingBox]);
+
   return (
     <LoadScript googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs">
       <SubmitButton
@@ -318,9 +335,8 @@ const MapWithPolyline = () => {
       <GoogleMap
         onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
-        center={markers[0]} // Center on London
-        zoom={12}
-        // onClick={handleMapClick}
+        center={centerAndZoom().center}
+        zoom={centerAndZoom().zoom}
         onMouseUp={onMMouseUp}
         options={{
           // gestureHandling: 'none',
@@ -335,11 +351,9 @@ const MapWithPolyline = () => {
         }}
             >
         {
-          // isReady &&
           markers.map((marker, index) => (
             <Marker
               onClick={() => onMarkerClick(index)}
-              // onMouseOver={() => onMarkerHover(index)}
               key={index}
               position={marker}
               text={`${index+1}`}
@@ -365,9 +379,6 @@ const MapWithPolyline = () => {
         {gameState.game_id}
       </Typography>
       <Box display="flex" flexDirection="row">
-        {/* <Button variant="outlined" onClick={resetDrawing}>
-          Reset
-        </Button> */}
       </Box>
     </StyledBox>
       </GoogleMap>
