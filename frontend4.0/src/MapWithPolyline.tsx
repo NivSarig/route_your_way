@@ -10,8 +10,26 @@ import Polyline from "./Polyline";
 // import  styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Box, Typography, Button } from '@mui/material';
+import { styled } from '@mui/system';
+
+
 
 import { BACKEND } from "./backend";
+
+const StyledBox = styled(Box)`
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 // import styled from "styled-components";
 
 // Define the bounding box coordinates for London
@@ -254,7 +272,7 @@ const MapWithPolyline = () => {
         // onClick={handleMapClick}
         onMouseUp={onMMouseUp}
         options={{
-          gestureHandling: 'none',
+          // gestureHandling: 'none',
           restriction: {
             latLngBounds: {
               north: boundingBox().north,
@@ -279,33 +297,36 @@ const MapWithPolyline = () => {
           ))
         }
         <Polyline path={polyline} options={{ strokeColor: "#FF2C95", strokeWeight: 8 }} />
-        <div
-          style={{
-            position: "absolute",
-            bottom: "0%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "white",
-            padding: "10px",
-            borderRadius: "5px",
-            fontSize: "2em",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.3)",
-          }}
+        <StyledBox>
+      <Typography variant="h6" gutterBottom>
+        {formatDistance(totalDistance)}
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        {formatTime(Math.round(totalMinutes))}
+      </Typography>
+      {allPointsCovered() && (
+        <Typography variant="body1" color="error" gutterBottom>
+          Game Over!
+        </Typography>
+      )}
+      <Typography variant="body1" gutterBottom>
+        {gameState.game_id}
+      </Typography>
+      <Box display="flex" flexDirection="row">
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={!allPointsCovered()}
+          onClick={onSubmit}
+          sx={{ marginRight: 1 }}
         >
-          {formatDistance(totalDistance)}
-          <br />
-          {formatTime(Math.round(totalMinutes))}
-          <br />
-          {allPointsCovered() && (
-            <span style={{ color: "red" }}>Game Over!</span>
-          )}
-          <br />
-          {gameState.game_id}
-          <button disabled={!allPointsCovered()} onClick={onSubmit}>
-            Submit
-          </button>
-          <button onClick={resetDrawing}>Reset</button>
-        </div>
+          Submit
+        </Button>
+        <Button variant="outlined" onClick={resetDrawing}>
+          Reset
+        </Button>
+      </Box>
+    </StyledBox>
       </GoogleMap>
     </LoadScript>
   );
