@@ -55,12 +55,10 @@ const Container = styled("div")({
 
 const HeaderTableCell = styled(TableCell)({
   fontWeight: "bold",
-  fontSize: "1.15rem",
 });
 
 const AlgoAvatarTableCell = styled(TableCell)({
   fontWeight: "bold",
-  fontSize: "1.05rem",
   color: "white",
 });
 
@@ -100,33 +98,42 @@ function LeadingBoard() {
     setInterval(poll, 5000);
   }, [location.state.code]);
 
+  const algoTime = "0:18:15";
+  const algoDistance = "3.904";
+  const algoLink = "https://www.google.com/maps/dir/32.0853,34.7818";
+
   return (
     <Container>
-      <TableContainer component={Paper} sx={{ width: "80%" }}>
+      <TableContainer sx={{ width: "80%" }}>
         <Table aria-label="simple table">
           <TableHead>
-            <TableRow>
+            <TableRow component={Paper}>
               <HeaderTableCell>#</HeaderTableCell>
               <HeaderTableCell>Name</HeaderTableCell>
               <HeaderTableCell>Time</HeaderTableCell>
               <HeaderTableCell>Distance</HeaderTableCell>
             </TableRow>
             <TableRow>
-              <img
-                src={avatar}
-                alt={"algo avatar"}
-                style={{
-                  width: "150%",
-                  height: "auto",
-                  float: "left",
-                }}
-              />
+              <AlgoAvatarTableCell>
+                <img
+                  src={avatar}
+                  alt={"algo avatar"}
+                  style={{
+                    width: "500%",
+                    height: "auto",
+                    float: "left",
+                  }}
+                />
+              </AlgoAvatarTableCell>
               <AlgoAvatarTableCell>Algo Solution</AlgoAvatarTableCell>
-              <AlgoAvatarTableCell>Time</AlgoAvatarTableCell>
-              <AlgoAvatarTableCell>Distance</AlgoAvatarTableCell>
+              <AlgoAvatarTableCell>{algoTime}</AlgoAvatarTableCell>
+              <AlgoAvatarTableCell>
+                {" "}
+                <a href={algoLink}>{algoDistance}</a>
+              </AlgoAvatarTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody component={Paper}>
             {leaderBoard.map((row, index) => (
               <TableRow
                 key={row.rank}
@@ -139,9 +146,8 @@ function LeadingBoard() {
                 </TableCell>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.time}</TableCell>
-                <TableCell>{row.distance}</TableCell>
                 <TableCell>
-                  <a href={row.link}>Maps</a>
+                  <a href={row.link}>{row.distance}</a>
                 </TableCell>
               </TableRow>
             ))}
