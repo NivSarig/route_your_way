@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 import img from "./leading_page_back.png";
-import avatar from "./algo_avatar.svg";
+import { ReactComponent as AvatarIcon } from "./algo_avatar.svg";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -122,12 +122,9 @@ function LeadingBoard() {
             </TableRow>
             <TableRow>
               <AlgoAvatarTableCell>
-                <img
-                  src={avatar}
-                  alt={"algo avatar"}
+                <AvatarIcon
                   style={{
-                    width: "500%",
-                    height: "auto",
+                    height: "50px",
                     float: "left",
                   }}
                 />
@@ -136,7 +133,9 @@ function LeadingBoard() {
               <AlgoAvatarTableCell>{algoTime}</AlgoAvatarTableCell>
               <AlgoAvatarTableCell>
                 {" "}
-                <a href={algoLink}>{algoDistance}</a>
+                <a href={algoLink} style={{ color: "inherit" }}>
+                  {algoDistance}
+                </a>
               </AlgoAvatarTableCell>
             </TableRow>
           </TableHead>
