@@ -65,7 +65,7 @@ if __name__ == "__main__":
         ]
     }
     game_id = "London"
-    game_id = "Tel Aviv"
+    # game_id = "Tel Aviv"
     # game_id = "Short"
     short_coordinates = locations[game_id]
     import time
