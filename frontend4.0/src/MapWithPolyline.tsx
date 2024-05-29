@@ -30,6 +30,33 @@ const StyledBox = styled(Box)`
   flex-direction: column;
   align-items: center;
 `;
+
+const SubmitButton = styled(Button)`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background: radial-gradient(circle, #4d9eff, #0065ff);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index:999;
+`;
+
+const ResetButton = styled(Button)`
+position: absolute;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: radial-gradient(circle, #FF2C95, #ff76d8);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index:999;`;
 // import styled from "styled-components";
 
 // Define the bounding box coordinates for London
@@ -131,6 +158,8 @@ const MapWithPolyline = () => {
     setIsDrawing(false);
     setPointsOrder([]);
     setPolyline([]);
+    setTotalDistance(0);
+    setTotalMinutes(0);
   }, []);
 
   const [directionsService, setDirectionsService] = useState(null);
@@ -269,6 +298,23 @@ const MapWithPolyline = () => {
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs">
+      <SubmitButton
+          variant="contained"
+          color="primary"
+          disabled={!allPointsCovered()}
+          onClick={onSubmit}
+          sx={{ marginRight: 1 }}
+        >
+          Submit
+        </SubmitButton>
+        <ResetButton
+          variant="contained"
+          color="primary"
+          onClick={resetDrawing}
+          sx={{ marginRight: 1 }}
+        >
+          Reset
+        </ResetButton>
       <GoogleMap
         onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
@@ -314,22 +360,14 @@ const MapWithPolyline = () => {
           Game Over!
         </Typography>
       )}
+    
       <Typography variant="body1" gutterBottom>
         {gameState.game_id}
       </Typography>
       <Box display="flex" flexDirection="row">
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={!allPointsCovered()}
-          onClick={onSubmit}
-          sx={{ marginRight: 1 }}
-        >
-          Submit
-        </Button>
-        <Button variant="outlined" onClick={resetDrawing}>
+        {/* <Button variant="outlined" onClick={resetDrawing}>
           Reset
-        </Button>
+        </Button> */}
       </Box>
     </StyledBox>
       </GoogleMap>
