@@ -142,7 +142,7 @@ function LeadingBoard() {
           <TableBody component={Paper}>
             {leaderBoard.map((row, index) => (
               <TableRow
-                key={row.rank}
+                key={row.name}
                 sx={{
                   backgroundColor: index % 2 === 0 ? "grey.100" : "white",
                 }}

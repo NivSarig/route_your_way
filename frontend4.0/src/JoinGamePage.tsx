@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Container = styled("div")({
   backgroundImage: `url(${img})`,
@@ -34,8 +34,10 @@ const StyledSelect = styled(Select)({
 });
 
 function JoinGamePage() {
+  const [ URLSearchParams , _]  = useSearchParams();
   const [name, setName] = useState<string>();
-  const [code, setCode] = useState<string>();
+  const [code, setCode] = useState<string>(URLSearchParams.get("code") || "");
+
 
   const handleCodeChange = (event) => {
     setCode(event.target.value);
