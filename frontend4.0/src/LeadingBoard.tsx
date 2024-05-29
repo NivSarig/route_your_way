@@ -1,8 +1,7 @@
 import { styled } from "@mui/material";
 import img from "./leading_page_back.png";
+import avatar from "./algo_avatar.svg";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { BACKEND } from "./backend";
@@ -23,7 +22,8 @@ type Contestant = {
 };
 
 const createData = (rank: number, name: string, time: string, distance: string, coordinates: [number[]]): Data => {
-  const link = "https://www.google.com/maps/dir/" + coordinates.map(c => c.join(",")).join("/");
+  const link =
+    "https://www.google.com/maps/dir/" + coordinates.map(c => c.join(",")).join("/") + "/data=!3m1!4b1!4m2!4m1!3e2";
   return { rank, name, time, distance, link };
 };
 
@@ -32,6 +32,21 @@ const Container = styled("div")({
   backgroundSize: "100% 100%",
   height: "100vh",
   width: "100vw",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "flex-start",
+  paddingTop: "1rem",
+});
+
+const HeaderTableCell = styled(TableCell)({
+  fontWeight: "bold",
+  fontSize: "1.15rem",
+});
+
+const AlgoAvatarTableCell = styled(TableCell)({
+  fontWeight: "bold",
+  fontSize: "1.05rem",
+  color: "white",
 });
 
 function LeadingBoard() {
@@ -64,19 +79,38 @@ function LeadingBoard() {
 
   return (
     <Container>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ width: "80%" }}>
         <Table aria-label='simple table'>
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Time</TableCell>
-              <TableCell>Distance</TableCell>
+              <HeaderTableCell>#</HeaderTableCell>
+              <HeaderTableCell>Name</HeaderTableCell>
+              <HeaderTableCell>Time</HeaderTableCell>
+              <HeaderTableCell>Distance</HeaderTableCell>
+            </TableRow>
+            <TableRow>
+              <img
+                src={avatar}
+                alt={"algo avatar"}
+                style={{
+                  width: "150%",
+                  height: "auto",
+                  float: "left",
+                }}
+              />
+              <AlgoAvatarTableCell>Algo Solution</AlgoAvatarTableCell>
+              <AlgoAvatarTableCell>Time</AlgoAvatarTableCell>
+              <AlgoAvatarTableCell>Distance</AlgoAvatarTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {leaderBoard.map(row => (
-              <TableRow key={row.rank}>
+            {leaderBoard.map((row, index) => (
+              <TableRow
+                key={row.rank}
+                sx={{
+                  backgroundColor: index % 2 === 0 ? "grey.100" : "white",
+                }}
+              >
                 <TableCell component='th' scope='row'>
                   {row.rank}
                 </TableCell>

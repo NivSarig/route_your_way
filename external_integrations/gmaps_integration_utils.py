@@ -10,7 +10,10 @@ def get_key():
     return os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
 
 
-URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}&mode=walking"
+GOOGLE_API_URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}&mode=walking"
+GOOGLE_BROWSER_WALKING_URL_FORMAT = (
+    "https://www.google.com/maps/dir/{}/@{},16.18z/?entry=ttu"
+)
 
 
 def get_durations_from_url(gmaps_url):
@@ -51,12 +54,10 @@ def generate_random_coordinates(city, num_coordinates):
 
 def get_url_from_coordinates(coordinates):
     coordinate_str = "/".join(
-        ["%20".join([str(lat), str(lon)]) for (lat, lon) in coordinates]
+        ["+".join([str(lat), str(lon)]) for (lat, lon) in coordinates]
     )
-    last_coordinate = "%20".join([str(coordinates[-1][0]), str(coordinates[-1][1])])
-    url = "https://www.google.com/maps/dir/{}/@{},16.18z/data=!4m2!4m1!3e0?entry=ttu".format(
-        coordinate_str, last_coordinate
-    )
+    last_coordinate = "+".join([str(coordinates[-1][0]), str(coordinates[-1][1])])
+    url = GOOGLE_BROWSER_WALKING_URL_FORMAT.format(coordinate_str, last_coordinate)
     return url
 
 
@@ -65,8 +66,8 @@ def get_route_info(origin, destination):
         origin = ",".join(map(str, origin))
     if not isinstance(destination, str):
         destination = ",".join(map(str, destination))
-    url = URL_FORMAT.format(origin, destination, get_key())
-    print(f"Fetching data from {url} {get_key()}")
+    url = GOOGLE_API_URL_FORMAT.format(origin, destination, get_key())
+    print(f"Fetching data from {url}")
     response = requests.get(url, timeout=1)
     data = response.json()
     print(f"Found data for {origin}, {destination}")
@@ -126,7 +127,9 @@ def build_all_duration_matrix(coordinates):
                 duration = 0
             else:
                 distance, duration = get_route_info(origin, destination)
-            deadhead_index[origin, destination] = {
+            if idx not in deadhead_index:
+                deadhead_index[idx] = {}
+            deadhead_index[idx][idy] = {
                 "origin_idx": idx,
                 "destination_idx": idy,
                 "origin": origin,
@@ -149,17 +152,3 @@ def concatenate_coordinates(coordinates):
 def get_route_info_from_url(new_url):
     new_coordinates = get_coordinates_from_url(new_url)
     return get_distance_and_duration(new_coordinates)
-
-
-def get_url_from_origin_waypoints_and_destination(
-    origin, destination, coordinates_with_waypoints
-):
-    waypoints = coordinates_with_waypoints
-    destination = str(destination)
-    origin = str(origin)
-    return (
-        "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&waypoints={}"
-        "&key={}&mode=Walking".format(
-            str(origin), str(destination), coordinate_to_str(waypoints), get_key()
-        )
-    )
