@@ -28,7 +28,7 @@ def solve_tsp_from_coordinate_list(coordinates_list, game_id):
     return deadhead_index, solve_tsp_for_deadhead_index(deadhead_index, game_directory, game_id, mock=MOCK)
 
 
-def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock):
+def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     if not os.path.exists(game_dir):
         os.mkdir(game_dir)
     input_file_name = os.path.join(game_dir, "input.tsp")
