@@ -69,6 +69,11 @@ const MapWithPolyline = () => {
         method: "PUT",
       }
     ).then(async (response) => {
+      if (!response.ok) {
+        alert("Game not found");
+        navigate("/");
+        return;
+      }
       const newGameState = await response.json();
       console.log("game state", newGameState);
       setGameState(newGameState);
