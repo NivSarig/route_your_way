@@ -5,10 +5,16 @@ from datetime import timedelta
 import requests
 from geopy import Nominatim
 
-GMAPS_API_KEY = os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
-GOOGLE_API_URL_FORMAT = \
-    "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}&mode=walking"
-GOOGLE_BROWSER_WALKING_URL_FORMAT = "https://www.google.com/maps/dir/{}/@{},16.18z/?entry=ttu"
+
+def get_key():
+    return os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
+
+
+GOOGLE_API_URL_FORMAT = "https://maps.googleapis.com/maps/api/directions/json?origin={}&destination={}&key={}&mode=walking"
+GOOGLE_BROWSER_WALKING_URL_FORMAT = (
+    "https://www.google.com/maps/dir/{}/@{},16.18z/?entry=ttu"
+)
+
 
 def get_durations_from_url(gmaps_url):
     pass
@@ -51,9 +57,7 @@ def get_url_from_coordinates(coordinates):
         ["+".join([str(lat), str(lon)]) for (lat, lon) in coordinates]
     )
     last_coordinate = "+".join([str(coordinates[-1][0]), str(coordinates[-1][1])])
-    url = GOOGLE_BROWSER_WALKING_URL_FORMAT.format(
-        coordinate_str, last_coordinate
-    )
+    url = GOOGLE_BROWSER_WALKING_URL_FORMAT.format(coordinate_str, last_coordinate)
     return url
 
 
@@ -62,7 +66,7 @@ def get_route_info(origin, destination):
         origin = ",".join(map(str, origin))
     if not isinstance(destination, str):
         destination = ",".join(map(str, destination))
-    url = GOOGLE_API_URL_FORMAT.format(origin, destination, GMAPS_API_KEY)
+    url = GOOGLE_API_URL_FORMAT.format(origin, destination, get_key())
     print(f"Fetching data from {url}")
     response = requests.get(url, timeout=1)
     data = response.json()
