@@ -1,8 +1,10 @@
 import { styled } from "@mui/material";
+import disabledButton from "./createDisabled.png";
+import createButton from "./createButton.png";
 import img from "./background.png";
+import selectArrow from "./selectArrow.png";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,13 +17,12 @@ const Container = styled("div")({
   width: "100vw",
   display: "flex",
   justifyContent: "center",
-  // alignItems: "center",
-  // flexDirection: "column",
 });
 const ContentContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
   marginTop: "400px",
+  alignItems: "center",
 });
 const StyledSelect = styled(Select)({
   color: "white",
@@ -33,10 +34,18 @@ const StyledSelect = styled(Select)({
   fontSize: "20px",
   // margin: "10px",
 });
+const StyledButton = styled(Button)(({ disabled }) => ({
+  background: `url(${disabled ? disabledButton : createButton})`,
+  backgroundSize: "100%",
+  border: "none",
+  height: disabled ? "100px" : "140px",
+  width: disabled ? "100px" : "140px",
+  marginTop: disabled ? "70px" : "50px",
+}));
 const cities = ["London", "Tel Aviv"];
 
 function CreateGamePage() {
-  const [city, setCity] = useState<string>();
+  const [city, setCity] = useState<string>("");
   const [name, setName] = useState<string>();
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -65,24 +74,31 @@ function CreateGamePage() {
   };
   return (
     <Container>
-      {/* <InputLabel id="demo-simple-select-label">Barel</InputLabel> */}
       <ContentContainer>
         <StyledSelect
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
           value={city}
-          label="Barel"
-          variant="standard"
-          // placeholder="Select a city"
+          displayEmpty
           onChange={handleChange}
+          sx={{ borderRadius: "40px" }}
+          IconComponent={() => (
+            <img alt="arrow" src={selectArrow} style={{ width: "50px" }} />
+          )}
         >
+          <MenuItem value={""}>
+            <em>Select city</em>
+          </MenuItem>
           {cities.map((city) => (
             <MenuItem value={city}>{city}</MenuItem>
           ))}
         </StyledSelect>
         {city && (
           <TextField
-            sx={{ backgroundColor: "white" }}
+            sx={{
+              backgroundColor: "white",
+              marginTop: "15px",
+              borderRadius: "40px",
+            }}
+            autoComplete="off"
             label="Name"
             variant="filled"
             value={name}
@@ -90,9 +106,7 @@ function CreateGamePage() {
           />
         )}
         {city && (
-          <Button disabled={!name} variant="contained" onClick={onCreate}>
-            Create
-          </Button>
+          <StyledButton disabled={!name} onClick={onCreate}></StyledButton>
         )}
       </ContentContainer>
     </Container>
