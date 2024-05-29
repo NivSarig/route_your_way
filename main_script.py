@@ -2,7 +2,7 @@ from external_integrations.gmaps_integration_utils import generate_random_coordi
 import requests
 
 from external_integrations.optimization_engine_utils import solve_tsp_from_coordinate_list
-from logging_utils import formatted_now
+# from logging_utils import formatted_now
 import logging
 logger = logging.getLogger(__name__)
 
