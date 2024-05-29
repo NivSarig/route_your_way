@@ -62,6 +62,7 @@ function CreateGamePage() {
       `${BACKEND}/game?` +
         new URLSearchParams({
           location: city,
+          random: "true"
         }),
       {
         method: "PUT",

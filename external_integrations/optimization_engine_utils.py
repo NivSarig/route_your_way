@@ -12,7 +12,7 @@ from external_integrations.gmaps_integration_utils import (
 )
 
 MOCK = "brute"
-MOCK = True
+MOCK = False
 
 
 def get_distance_and_duration_from_game_id(short_coordinates, game_id):
@@ -126,14 +126,14 @@ EOF""".format(
 
     try:
         os.system(
-            "python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
+            "python ../external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
                 input_file_name, output_file_name
             )
         )
         print("Woohoo we are Hackathoning")
     except Exception as e:
         print("Oh boy we are Hackathoning")
-    symmetric_output_file_name = os.path.join(game_dir, "good_output.txt")
+    symmetric_output_file_name = os.path.join(game_dir, "output.txt")
     with open(symmetric_output_file_name, "r") as fid:
         asymmetric_output_columns = fid.read().split("\n")[:-1][::2]
     asymmetric_output_file_name = os.path.join(game_dir, "asym-good_output.txt")
