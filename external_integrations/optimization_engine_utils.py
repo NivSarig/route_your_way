@@ -47,6 +47,7 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
         os.mkdir(game_dir)
     input_file_name = os.path.join(game_dir, "input.tsp")
     output_file_name = os.path.join(game_dir, "output.txt")
+    # output_file_name = os.path.join(game_dir, "asym-good_output.txt")
     if os.path.exists(output_file_name) and mock is not False:
         time.sleep(1.5 + random())
         with open(output_file_name, 'r') as fid:
@@ -110,10 +111,19 @@ EOF""".format(game_id, tsp_dimension, duration_str)
         fid.write(file_content)
     print(file_content)
 
-    os.system("python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
-        input_file_name, output_file_name))
-    with open(output_file_name, 'r') as fid:
-        return fid.read().split('\n')
+    try:
+        os.system("python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
+            input_file_name, output_file_name))
+        print("Woohoo we are Hackathoning")
+    except Exception as e:
+        print("Oh boy we are Hackathoning")
+    symmetric_output_file_name = os.path.join(game_dir, "good_output.txt")
+    with open(symmetric_output_file_name, 'r') as fid:
+        asymmetric_output_columns = fid.read().split('\n')[:-1][::2]
+    asymmetric_output_file_name = os.path.join(game_dir, "asym-good_output.txt")
+    with open(asymmetric_output_file_name, 'w') as fid:
+        fid.write('\n'.join(asymmetric_output_columns))
+    return asymmetric_output_columns
 
 
 if __name__ == "__main__":
