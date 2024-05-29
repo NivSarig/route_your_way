@@ -91,7 +91,7 @@ function LeadingBoard() {
             .filter((c: Contestant) => c.distance !== undefined)
             .map((c: Contestant, i) => {
               return createData(
-                i,
+                i + 1,
                 c.name,
                 c.duration,
                 c.distance?.toString(),
@@ -111,8 +111,8 @@ function LeadingBoard() {
 
   return (
     <Container>
-      <TableContainer sx={{ width: "80%" }}>
-        <Table aria-label="simple table">
+      <TableContainer sx={{ width: "80%", maxHeight: "60vh" }}>
+        <Table stickyHeader aria-label="simple table">
           <TableHead>
             <TableRow component={Paper}>
               <HeaderTableCell>#</HeaderTableCell>
@@ -120,6 +120,8 @@ function LeadingBoard() {
               <HeaderTableCell>Time</HeaderTableCell>
               <HeaderTableCell>Distance</HeaderTableCell>
             </TableRow>
+          </TableHead>
+          <TableBody>
             <TableRow>
               <AlgoAvatarTableCell>
                 <AvatarIcon
@@ -138,10 +140,9 @@ function LeadingBoard() {
                 </a>
               </AlgoAvatarTableCell>
             </TableRow>
-          </TableHead>
-          <TableBody component={Paper}>
             {leaderBoard.map((row, index) => (
               <TableRow
+                component={Paper}
                 key={row.name}
                 sx={{
                   backgroundColor: index % 2 === 0 ? "grey.100" : "white",

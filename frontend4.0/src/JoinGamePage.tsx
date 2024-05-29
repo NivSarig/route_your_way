@@ -35,10 +35,9 @@ const StyledButton = styled(Button)(({ disabled }) => ({
   marginTop: disabled ? "70px" : "50px",
 }));
 function JoinGamePage() {
-  const [ URLSearchParams , _]  = useSearchParams();
+  const [URLSearchParams] = useSearchParams();
   const [name, setName] = useState<string>("");
   const [code, setCode] = useState<string>(URLSearchParams.get("code") || "");
-
 
   const handleCodeChange = (event) => {
     setCode(event.target.value);
