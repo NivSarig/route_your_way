@@ -22,7 +22,7 @@ def get_distance_and_duration_from_game_id(short_coordinates, game_id):
 
     url = get_url_from_coordinates(coordinates)
     distance, duration = get_distance_and_duration(coordinates)
-    return url, distance, duration
+    return url, distance, duration, coordinates
 
 
 def solve_tsp_from_coordinate_list(coordinates_list, game_id):
