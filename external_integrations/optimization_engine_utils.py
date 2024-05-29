@@ -7,7 +7,7 @@ import json
 from external_integrations.gmaps_integration_utils import build_all_duration_matrix, pairwise
 
 MOCK = "brute"
-MOCK = False
+MOCK = True
 
 
 def solve_tsp_from_coordinate_list(coordinates_list, game_id):
@@ -58,8 +58,8 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     # Make a symmetric TSP out of the asymmetric problem we have
     dimension = len(deadhead_index)
     tsp_dimension = dimension * 2
-    INF = 'INF'
-    mINF = '-INF'
+    INF =  str(1000000)#'INF'
+    mINF = str(-1000000)#'-INF'
     durations = [[INF] * tsp_dimension for __ in range(tsp_dimension)]
     for k1 in range(dimension):
         for k2 in range(dimension):
