@@ -4,10 +4,25 @@ import time
 from random import random
 import json
 
-from external_integrations.gmaps_integration_utils import build_all_duration_matrix, pairwise
+from external_integrations.gmaps_integration_utils import build_all_duration_matrix, pairwise, get_url_from_coordinates, \
+    get_distance_and_duration
 
 MOCK = "brute"
 MOCK = True
+
+
+def get_distance_and_duration_from_game_id(short_coordinates, game_id):
+    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
+    print(stops)
+
+    coordinates = []
+
+    for stop in stops:
+        coordinates.append(tuple(deadhead_index[stop][stops[0]]['origin']))
+
+    url = get_url_from_coordinates(coordinates)
+    distance, duration = get_distance_and_duration(coordinates)
+    return url, distance, duration
 
 
 def solve_tsp_from_coordinate_list(coordinates_list, game_id):
