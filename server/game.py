@@ -24,7 +24,7 @@ def create_game(location, code, random, background_tasks: BackgroundTasks):
     new_game_id = code or generate_random_string()
     print("creating game", new_game_id)
     if random:
-        _, coordinates = generate_random_coordinates(location, 4)
+        _, coordinates = generate_random_coordinates(location, 7)
     else:
         if location not in locations:
             raise HTTPException(status_code=400, detail="Location doesn't exists")

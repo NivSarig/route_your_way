@@ -12,7 +12,6 @@ from external_integrations.gmaps_integration_utils import (
 )
 
 MOCK = "brute"
-MOCK = False
 
 
 def get_distance_and_duration_from_game_id(short_coordinates, game_id):
