@@ -2,15 +2,7 @@ import { styled } from "@mui/material";
 import img from "./leading_page_back.png";
 import avatar from "./algo_avatar.svg";
 import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { BACKEND } from "./backend";
 
@@ -29,16 +21,9 @@ type Contestant = {
   coordinates: [number[]];
 };
 
-const createData = (
-  rank: number,
-  name: string,
-  time: string,
-  distance: string,
-  coordinates: [number[]]
-): Data => {
+const createData = (rank: number, name: string, time: string, distance: string, coordinates: [number[]]): Data => {
   const link =
-    "https://www.google.com/maps/dir/" +
-    coordinates.map((c) => c.join(",")).join("/");
+    "https://www.google.com/maps/dir/" + coordinates.map(c => c.join(",")).join("/") + "/data=!3m1!4b1!4m2!4m1!3e2";
   return { rank, name, time, distance, link };
 };
 
@@ -72,26 +57,18 @@ function LeadingBoard() {
     const poll = () => {
       fetch(`${BACKEND}/game/${location.state.code}`, {
         method: "GET",
-      }).then(async (response) => {
+      }).then(async response => {
         const newGameState = await response.json();
         console.log("game state", newGameState);
         setGameState(newGameState);
-        const sorted = Object.values(newGameState.contestants).sort(
-          (a: Contestant, b: Contestant) => {
-            return a.distance - b.distance;
-          }
-        );
+        const sorted = Object.values(newGameState.contestants).sort((a: Contestant, b: Contestant) => {
+          return a.distance - b.distance;
+        });
         setLeaderBoard(
           sorted
             .filter((c: Contestant) => c.distance !== undefined)
             .map((c: Contestant, i) => {
-              return createData(
-                i,
-                c.name,
-                c.duration,
-                c.distance?.toString(),
-                c.coordinates
-              );
+              return createData(i, c.name, c.duration, c.distance?.toString(), c.coordinates);
             })
         );
       });
@@ -103,7 +80,7 @@ function LeadingBoard() {
   return (
     <Container>
       <TableContainer component={Paper} sx={{ width: "80%" }}>
-        <Table aria-label="simple table">
+        <Table aria-label='simple table'>
           <TableHead>
             <TableRow>
               <HeaderTableCell>#</HeaderTableCell>
@@ -134,7 +111,7 @@ function LeadingBoard() {
                   backgroundColor: index % 2 === 0 ? "grey.100" : "white",
                 }}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component='th' scope='row'>
                   {row.rank}
                 </TableCell>
                 <TableCell>{row.name}</TableCell>
