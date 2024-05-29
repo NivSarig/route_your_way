@@ -1,8 +1,16 @@
 import { styled } from "@mui/material";
 import img from "./leading_page_back.png";
-import avatar from "./algo_avatar.svg";
+import { ReactComponent as AvatarIcon } from "./algo_avatar.svg";
 import { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { BACKEND } from "./backend";
 
@@ -21,9 +29,23 @@ type Contestant = {
   coordinates: [number[]];
 };
 
-const createData = (rank: number, name: string, time: string, distance: string, coordinates: [number[]]): Data => {
-  const link =
-    "https://www.google.com/maps/dir/" + coordinates.map(c => c.join(",")).join("/") + "/data=!3m1!4b1!4m2!4m1!3e2";
+const coordinatesToLink = (coordinates: [number[]]) => {
+  return (
+    "https://www.google.com/maps/dir/" +
+    coordinates.map((c) => c.join(",")).join("/") +
+    "/data=!3m1!4b1!4m2!4m1!3e2"
+  );
+};
+
+const createData = (
+  rank: number,
+  name: string,
+  time: string,
+  distance: string,
+  coordinates: [number[]]
+): Data => {
+  const link = coordinatesToLink(coordinates);
+
   return { rank, name, time, distance, link };
 };
 
@@ -40,12 +62,10 @@ const Container = styled("div")({
 
 const HeaderTableCell = styled(TableCell)({
   fontWeight: "bold",
-  fontSize: "1.15rem",
 });
 
 const AlgoAvatarTableCell = styled(TableCell)({
   fontWeight: "bold",
-  fontSize: "1.05rem",
   color: "white",
 });
 
@@ -57,53 +77,69 @@ function LeadingBoard() {
     const poll = () => {
       fetch(`${BACKEND}/game/${location.state.code}`, {
         method: "GET",
-      }).then(async response => {
+      }).then(async (response) => {
         const newGameState = await response.json();
         console.log("game state", newGameState);
         setGameState(newGameState);
-        const sorted = Object.values(newGameState.contestants).sort((a: Contestant, b: Contestant) => {
-          return a.distance - b.distance;
-        });
+        const sorted = Object.values(newGameState.contestants).sort(
+          (a: Contestant, b: Contestant) => {
+            return a.distance - b.distance;
+          }
+        );
         setLeaderBoard(
           sorted
             .filter((c: Contestant) => c.distance !== undefined)
             .map((c: Contestant, i) => {
-              return createData(i, c.name, c.duration, c.distance?.toString(), c.coordinates);
+              return createData(
+                i,
+                c.name,
+                c.duration,
+                c.distance?.toString(),
+                c.coordinates
+              );
             })
         );
       });
     };
     poll();
-    setInterval(poll, 5000);
+    setInterval(poll, 3000);
   }, [location.state.code]);
+
+  const algoTime = gameState?.solution?.duration;
+  const algoDistance = gameState?.solution?.distance;
+  const algoLink = coordinatesToLink(gameState?.solution?.coordinates || []);
 
   return (
     <Container>
-      <TableContainer component={Paper} sx={{ width: "80%" }}>
-        <Table aria-label='simple table'>
+      <TableContainer sx={{ width: "80%" }}>
+        <Table aria-label="simple table">
           <TableHead>
-            <TableRow>
+            <TableRow component={Paper}>
               <HeaderTableCell>#</HeaderTableCell>
               <HeaderTableCell>Name</HeaderTableCell>
               <HeaderTableCell>Time</HeaderTableCell>
               <HeaderTableCell>Distance</HeaderTableCell>
             </TableRow>
             <TableRow>
-              <img
-                src={avatar}
-                alt={"algo avatar"}
-                style={{
-                  width: "150%",
-                  height: "auto",
-                  float: "left",
-                }}
-              />
+              <AlgoAvatarTableCell>
+                <AvatarIcon
+                  style={{
+                    height: "50px",
+                    float: "left",
+                  }}
+                />
+              </AlgoAvatarTableCell>
               <AlgoAvatarTableCell>Algo Solution</AlgoAvatarTableCell>
-              <AlgoAvatarTableCell>Time</AlgoAvatarTableCell>
-              <AlgoAvatarTableCell>Distance</AlgoAvatarTableCell>
+              <AlgoAvatarTableCell>{algoTime}</AlgoAvatarTableCell>
+              <AlgoAvatarTableCell>
+                {" "}
+                <a href={algoLink} style={{ color: "inherit" }}>
+                  {algoDistance}
+                </a>
+              </AlgoAvatarTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody component={Paper}>
             {leaderBoard.map((row, index) => (
               <TableRow
                 key={row.rank}
@@ -111,14 +147,13 @@ function LeadingBoard() {
                   backgroundColor: index % 2 === 0 ? "grey.100" : "white",
                 }}
               >
-                <TableCell component='th' scope='row'>
+                <TableCell component="th" scope="row">
                   {row.rank}
                 </TableCell>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.time}</TableCell>
-                <TableCell>{row.distance}</TableCell>
                 <TableCell>
-                  <a href={row.link}>Maps</a>
+                  <a href={row.link}>{row.distance}</a>
                 </TableCell>
               </TableRow>
             ))}

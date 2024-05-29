@@ -6,6 +6,8 @@ import InputLabel from "@mui/material/InputLabel";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import disabledButton from "./joinDisabled.png";
+import createButton from "./joinButton.png";
 
 const Container = styled("div")({
   backgroundImage: `url(${img})`,
@@ -21,21 +23,20 @@ const ContentContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
   marginTop: "400px",
-});
-const StyledSelect = styled(Select)({
-  color: "white",
-  background: "linear-gradient(to right bottom, #4100fd, #2a0680)",
-  // backgroundColor: "#2a0680",
-  height: "50px",
-  width: "200px",
-  borderRadius: "10px",
-  fontSize: "20px",
-  // margin: "10px",
+  alignItems: "center",
 });
 
+const StyledButton = styled(Button)(({ disabled }) => ({
+  background: `url(${disabled ? disabledButton : createButton})`,
+  backgroundSize: "100%",
+  border: "none",
+  height: disabled ? "100px" : "140px",
+  width: disabled ? "100px" : "140px",
+  marginTop: disabled ? "70px" : "50px",
+}));
 function JoinGamePage() {
-  const [name, setName] = useState<string>();
-  const [code, setCode] = useState<string>();
+  const [name, setName] = useState<string>("");
+  const [code, setCode] = useState<string>("");
 
   const handleCodeChange = (event) => {
     setCode(event.target.value);
@@ -47,34 +48,39 @@ function JoinGamePage() {
   const navigate = useNavigate();
 
   const onCreate = () => {
-    navigate("/map", { state: { name, code } });
+    navigate("/map", { state: { name, code: code.toUpperCase() } });
   };
   return (
     <Container>
-      {/* <InputLabel id="demo-simple-select-label">Barel</InputLabel> */}
       <ContentContainer>
         <TextField
-          sx={{ backgroundColor: "white" }}
+          sx={{
+            backgroundColor: "white",
+            borderRadius: "40px",
+          }}
+          autoComplete="off"
           label="Name"
           variant="filled"
           value={name}
           onChange={handleNameChange}
         />
         <TextField
-          sx={{ backgroundColor: "white" }}
+          sx={{
+            backgroundColor: "white",
+            marginTop: "15px",
+            borderRadius: "40px",
+          }}
+          autoComplete="off"
           label="Code"
           variant="filled"
           value={code}
           onChange={handleCodeChange}
         />
 
-        <Button
+        <StyledButton
           disabled={!name || !code}
-          variant="contained"
           onClick={onCreate}
-        >
-          Join Game!
-        </Button>
+        ></StyledButton>
       </ContentContainer>
     </Container>
   );
