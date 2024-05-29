@@ -29,6 +29,14 @@ type Contestant = {
   coordinates: [number[]];
 };
 
+const coordinatesToLink = (coordinates: [number[]]) => {
+  return (
+    "https://www.google.com/maps/dir/" +
+    coordinates.map((c) => c.join(",")).join("/") +
+    "/data=!3m1!4b1!4m2!4m1!3e2"
+  );
+};
+
 const createData = (
   rank: number,
   name: string,
@@ -36,9 +44,8 @@ const createData = (
   distance: string,
   coordinates: [number[]]
 ): Data => {
-  const link =
-    "https://www.google.com/maps/dir/" +
-    coordinates.map((c) => c.join(",")).join("/");
+  const link = coordinatesToLink(coordinates);
+
   return { rank, name, time, distance, link };
 };
 

@@ -25,8 +25,8 @@ async def root():
 
 
 @app.put("/game")
-async def put_game(location: str = None):
-    return create_game(location)
+async def put_game(location: str, background_tasks: BackgroundTasks):
+    return create_game(location, None, background_tasks)
 
 
 @app.put("/game/{game_id}/contestant")

@@ -1,7 +1,6 @@
-from external_integrations.gmaps_integration_utils import generate_random_coordinates, get_url_from_coordinates
-import requests
+from external_integrations.gmaps_integration_utils import generate_random_coordinates
 
-from external_integrations.optimization_engine_utils import solve_tsp_from_coordinate_list
+from external_integrations.optimization_engine_utils import get_distance_and_duration_from_game_id
 # from logging_utils import formatted_now
 import logging
 logger = logging.getLogger(__name__)
@@ -72,23 +71,6 @@ if __name__ == "__main__":
     # game_id = "TelAviv"
     # game_id = "Short"
     short_coordinates = locations[game_id]
-    import time
-    start_time = time.time()
-    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
-    print(stops)
-    print(time.time() - start_time)
-
-    coordinates = []
-    for stop in stops:
-        coordinates.append(tuple(deadhead_index[stop][stops[0]]['origin']))
-
-    # origin = (55.70319444748, 37.63345154478967)
-    # destination = (55.843094719260534, 37.47741722330984)
-    # waypoints = [
-    #     (55.76256915886491, 37.53964491245408),
-    #     (55.79953159156407, 37.62388899803995),
-    #     (55.82000118014139, 37.531695602671846)]
-    # coordinates = [origin] + waypoints + [destination]
-    url = get_url_from_coordinates(coordinates)
-    print(url)
+    url, distance, duration = get_distance_and_duration_from_game_id(short_coordinates, game_id)
+    print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
 

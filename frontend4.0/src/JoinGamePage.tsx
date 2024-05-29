@@ -47,7 +47,7 @@ function JoinGamePage() {
   const navigate = useNavigate();
 
   const onCreate = () => {
-    navigate("/map", { state: { name, code } });
+    navigate("/map", { state: { name, code: code.toUpperCase() } });
   };
   return (
     <Container>
