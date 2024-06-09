@@ -42,7 +42,7 @@ const StyledButton = styled(Button)(({ disabled }) => ({
   width: disabled ? "100px" : "140px",
   marginTop: disabled ? "70px" : "50px",
 }));
-const cities = ["London", "Tel Aviv"];
+const cities = ["London", "Tel Aviv", "Paris", "New York", "Berlin"];
 
 function CreateGamePage() {
   const [city, setCity] = useState<string>("");
@@ -62,6 +62,7 @@ function CreateGamePage() {
       `${BACKEND}/game?` +
         new URLSearchParams({
           location: city,
+          random: "true"
         }),
       {
         method: "PUT",
