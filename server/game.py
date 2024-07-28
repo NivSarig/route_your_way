@@ -81,6 +81,7 @@ def add_submit(game_id, name, indexes):
     except Exception as e:
         curr_game["contestants"][name]["status"] = "failed"
         curr_game["contestants"][name]["message"] = repr(e)
+        raise e
 
     curr_game["contestants"][name]["duration"] = duration
     curr_game["contestants"][name]["distance"] = distance

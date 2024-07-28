@@ -16,6 +16,7 @@ MOCK = True
 
 
 def get_distance_and_duration_from_game_id(short_coordinates, game_id):
+    print(short_coordinates)
     deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
     print(stops)
 
@@ -125,15 +126,15 @@ EOF""".format(
     print(file_content)
 
     try:
-        os.system(
-            "python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
-                input_file_name, output_file_name
-            )
+        cmd = "python ../external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
+            input_file_name, output_file_name
         )
+        print(cmd)
+        os.system(cmd)
         print("Woohoo we are Hackathoning")
     except Exception as e:
         print("Oh boy we are Hackathoning")
-    symmetric_output_file_name = os.path.join(game_dir, "good_output.txt")
+    symmetric_output_file_name = os.path.join(output_file_name)
     with open(symmetric_output_file_name, "r") as fid:
         asymmetric_output_columns = fid.read().split("\n")[:-1][::2]
     asymmetric_output_file_name = os.path.join(game_dir, "asym-good_output.txt")
