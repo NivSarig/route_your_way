@@ -11,7 +11,8 @@ from external_integrations.gmaps_integration_utils import (
     get_distance_and_duration,
 )
 
-MOCK = "brute"
+# MOCK = "brute"
+MOCK = False
 
 
 def get_distance_and_duration_from_game_id(short_coordinates, game_id):
@@ -84,20 +85,21 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     # Make a symmetric TSP out of the asymmetric problem we have
     dimension = len(deadhead_index)
     tsp_dimension = dimension * 2
-    INF = str(1000000)  #'INF'
-    mINF = str(-1000000)  #'-INF'
+    INF = str(1000000)  # 'INF'
+    mINF = str(-1000000)  # '-INF'
     durations = [[INF] * tsp_dimension for __ in range(tsp_dimension)]
     for k1 in range(dimension):
         for k2 in range(dimension):
             if k1 == k2:
                 continue
             int_duration12 = str(deadhead_index[str(k1)][str(k2)]["duration"])
+            int_duration21 = str(deadhead_index[str(k2)][str(k1)]["duration"])
             durations[int(k1)][int(k2)] = INF
             durations[int(k2)][int(k1)] = INF
             durations[dimension + int(k1)][dimension + int(k2)] = INF
             durations[dimension + int(k2)][dimension + int(k1)] = INF
             durations[int(k1)][dimension + int(k2)] = int_duration12
-            durations[dimension + int(k2)][int(k1)] = int_duration12
+            durations[dimension + int(k2)][int(k1)] = int_duration21
         durations[int(k1)][int(k1)] = "0"
         durations[dimension + int(k1)][dimension + int(k1)] = "0"
         durations[int(k1)][dimension + int(k1)] = mINF
