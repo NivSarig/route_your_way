@@ -8,7 +8,10 @@ sys.path.append(os.getcwd() + "/..")
 from external_integrations.optimization_engine_utils import (
     get_distance_and_duration_from_game_id,
 )
-from external_integrations.gmaps_integration_utils import generate_random_coordinates, get_distance_and_duration
+from external_integrations.gmaps_integration_utils import (
+    generate_random_coordinates,
+    get_distance_and_duration,
+)
 from locations import locations
 
 
@@ -24,7 +27,7 @@ def create_game(location, code, random, background_tasks: BackgroundTasks):
     new_game_id = code or generate_random_string()
     print("creating game", new_game_id)
     if random:
-        _, coordinates = generate_random_coordinates(location, 7)
+        _, coordinates = generate_random_coordinates(location, 9)
     else:
         if location not in locations:
             raise HTTPException(status_code=400, detail="Location doesn't exists")
