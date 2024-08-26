@@ -6,6 +6,7 @@ import requests
 from geopy import Nominatim
 import urllib.parse
 
+
 def get_key():
     return os.environ.get("NIV_PRIVATE_GOOGLE_MAP_API_TOKEN", None)
 
@@ -19,26 +20,32 @@ GOOGLE_BROWSER_WALKING_URL_FORMAT = (
 def get_durations_from_url(gmaps_url):
     pass
 
+
 def generate_random_coordinates(city, num_coordinates=10):
     # https://maps.googleapis.com/maps/api/place/textsearch/output?parameters
 
-
-
     # Use the Google Places Nearby Search API to search for places within the city
-    safe_city  = urllib.parse.quote("random places in " + city)
+    safe_city = urllib.parse.quote("random places in " + city)
     print("safe_city", safe_city)
     url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={safe_city}&key={get_key()}"
     response = requests.get(url)
     data = response.json()
 
     # Get the list of places
-    places = data['results']
+    places = data["results"]
     print(places)
+    if len(places) == 0:
+        print("no random places found")
+        print(data["error_message"])
+        return
     # Randomly select a number of places
     random_places = random.sample(places, num_coordinates)
 
     # Extract the latitude and longitude of each place
-    points = [(place['geometry']['location']['lat'], place['geometry']['location']['lng']) for place in random_places]
+    points = [
+        (place["geometry"]["location"]["lat"], place["geometry"]["location"]["lng"])
+        for place in random_places
+    ]
     print(points)
     return None, points
 
@@ -53,7 +60,6 @@ def _generate_random_coordinates(city, num_coordinates):
         return None
 
     # create 10 random points in this city
-
 
     # Get the bounding box coordinates of the city
     bbox = location.raw["boundingbox"]
