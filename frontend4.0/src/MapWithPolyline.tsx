@@ -10,10 +10,8 @@ import Polyline from "./Polyline";
 // import  styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button } from '@mui/material';
-import { styled } from '@mui/system';
-
-
+import { Box, Typography, Button } from "@mui/material";
+import { styled } from "@mui/system";
 
 import { BACKEND } from "./backend";
 
@@ -42,21 +40,22 @@ const SubmitButton = styled(Button)`
   border-radius: 20px;
   font-size: 16px;
   cursor: pointer;
-  z-index:999;
+  z-index: 999;
 `;
 
 const ResetButton = styled(Button)`
-position: absolute;
+  position: absolute;
   bottom: 20px;
   left: 20px;
   padding: 10px 20px;
-  background: radial-gradient(circle, #FF2C95, #ff76d8);
+  background: radial-gradient(circle, #ff2c95, #ff76d8);
   color: white;
   border: none;
   border-radius: 20px;
   font-size: 16px;
   cursor: pointer;
-  z-index:999;`;
+  z-index: 999;
+`;
 // import styled from "styled-components";
 
 // Define the bounding box coordinates for London
@@ -68,11 +67,8 @@ const londonBounds = {
 };
 const someRandomMarkers: { lat: number; lng: number }[] = [];
 for (let i = 0; i < 10; i++) {
-  const lat =
-    londonBounds.south +
-    Math.random() * (londonBounds.north - londonBounds.south);
-  const lng =
-    londonBounds.west + Math.random() * (londonBounds.east - londonBounds.west);
+  const lat = londonBounds.south + Math.random() * (londonBounds.north - londonBounds.south);
+  const lng = londonBounds.west + Math.random() * (londonBounds.east - londonBounds.west);
   someRandomMarkers.push({ lat, lng });
 }
 const MapWithPolyline = () => {
@@ -90,12 +86,9 @@ const MapWithPolyline = () => {
   const [gameState, setGameState] = useState({} as any);
   useEffect(() => {
     console.log("joining", location.state);
-    fetch(
-      `${BACKEND}/game/${location.state.code}/contestant?name=${location.state.name}`,
-      {
-        method: "PUT",
-      }
-    ).then(async (response) => {
+    fetch(`${BACKEND}/game/${location.state.code}/contestant?name=${location.state.name}`, {
+      method: "PUT",
+    }).then(async response => {
       if (!response.ok) {
         alert("Game not found");
         navigate("/");
@@ -113,7 +106,7 @@ const MapWithPolyline = () => {
       const poll = () => {
         fetch(`${BACKEND}/game/${location.state.code}`, {
           method: "GET",
-        }).then(async (response) => {
+        }).then(async response => {
           const newGameState = await response.json();
           console.log("game state", newGameState);
           setGameState(newGameState);
@@ -124,17 +117,14 @@ const MapWithPolyline = () => {
   }, [location.state.code]);
 
   const onSubmit = () => {
-    fetch(
-      `${BACKEND}/game/${gameState.game_id}/submit?name=${location.state.name}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(pointsOrder),
-      }
-    ).then(() => {
+    fetch(`${BACKEND}/game/${gameState.game_id}/submit?name=${location.state.name}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pointsOrder),
+    }).then(() => {
       navigate("/LeadingBoard", { state: { code: gameState.game_id } });
     });
   };
@@ -151,10 +141,10 @@ const MapWithPolyline = () => {
   //   [markers]
   // );
 
-  const onMMouseUp = useCallback((index) => {
+  const onMMouseUp = useCallback(index => {
     setIsDrawing(false);
   }, []);
-  const resetDrawing = useCallback((index) => {
+  const resetDrawing = useCallback(index => {
     setIsDrawing(false);
     setPointsOrder([]);
     setPolyline([]);
@@ -175,7 +165,7 @@ const MapWithPolyline = () => {
     [pointsOrder]
   );
 
-  const boundingBox = useCallback(()=> {
+  const boundingBox = useCallback(() => {
     let north = -Infinity;
     let south = Infinity;
     let west = Infinity;
@@ -186,9 +176,8 @@ const MapWithPolyline = () => {
       if (marker.lng < west) west = marker.lng;
       if (marker.lng > east) east = marker.lng;
     });
-    return { north, south, west, east};
+    return { north, south, west, east };
   }, [markers]);
-
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -212,9 +201,7 @@ const MapWithPolyline = () => {
               if (status === google.maps.DirectionsStatus.OK) {
                 resolve(response.routes[0]);
               } else {
-                reject(
-                  new Error(`Directions request failed. Status: ${status}`)
-                );
+                reject(new Error(`Directions request failed. Status: ${status}`));
               }
             }
           );
@@ -224,7 +211,7 @@ const MapWithPolyline = () => {
         const distance = route.legs[0].distance.value;
         //@ts-ignore
         const polyline = route.legs[0].steps
-          .map((step) => {
+          .map(step => {
             return step.lat_lngs;
           })
           .flat();
@@ -259,7 +246,7 @@ const MapWithPolyline = () => {
   //   [getRouteDistance, isDrawing, pointsOrder, markers]
   // );
   const onMarkerClick = useCallback(
-    async (index) => {
+    async index => {
       console.log("index", index);
       console.log("marker", markers[index]);
       if (pointsOrder.length === 0) {
@@ -267,14 +254,11 @@ const MapWithPolyline = () => {
         setPointsOrder([index]);
         setPolyline([markers[index]]);
       } else if (isDrawing && !pointsOrder.includes(index)) {
-        setPointsOrder((prevOrder) => [...prevOrder, index]);
-        const route = await getRouteDistance(
-          markers[pointsOrder[pointsOrder.length - 1]],
-          markers[index]
-        );
-        setTotalDistance((prevDistance) => prevDistance + route?.distance);
-        setTotalMinutes((prevMinutes) => prevMinutes + route?.minutes);
-        setPolyline((prevPath) => [...prevPath, ...route?.polyline]);
+        setPointsOrder(prevOrder => [...prevOrder, index]);
+        const route = await getRouteDistance(markers[pointsOrder[pointsOrder.length - 1]], markers[index]);
+        setTotalDistance(prevDistance => prevDistance + route?.distance);
+        setTotalMinutes(prevMinutes => prevMinutes + route?.minutes);
+        setPolyline(prevPath => [...prevPath, ...route?.polyline]);
       }
     },
     [getRouteDistance, isDrawing, markers, pointsOrder]
@@ -296,25 +280,21 @@ const MapWithPolyline = () => {
     return `${km} KM, ${m} M`;
   };
 
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   return (
-    <LoadScript googleMapsApiKey="AIzaSyDhoZuGMp4OC6-42RUG2VX0O3Havr3o0Rs">
+    <LoadScript googleMapsApiKey={apiKey}>
       <SubmitButton
-          variant="contained"
-          color="primary"
-          disabled={!allPointsCovered()}
-          onClick={onSubmit}
-          sx={{ marginRight: 1 }}
-        >
-          Submit
-        </SubmitButton>
-        <ResetButton
-          variant="contained"
-          color="primary"
-          onClick={resetDrawing}
-          sx={{ marginRight: 1 }}
-        >
-          Reset
-        </ResetButton>
+        variant='contained'
+        color='primary'
+        disabled={!allPointsCovered()}
+        onClick={onSubmit}
+        sx={{ marginRight: 1 }}
+      >
+        Submit
+      </SubmitButton>
+      <ResetButton variant='contained' color='primary' onClick={resetDrawing} sx={{ marginRight: 1 }}>
+        Reset
+      </ResetButton>
       <GoogleMap
         onLoad={() => setIsReady(true)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
@@ -333,7 +313,7 @@ const MapWithPolyline = () => {
             },
           },
         }}
-            >
+      >
         {
           // isReady &&
           markers.map((marker, index) => (
@@ -342,34 +322,34 @@ const MapWithPolyline = () => {
               // onMouseOver={() => onMarkerHover(index)}
               key={index}
               position={marker}
-              text={`${index+1}`}
+              text={`${index + 1}`}
               color={getPointColor(index)}
             />
           ))
         }
         <Polyline path={polyline} options={{ strokeColor: "#FF2C95", strokeWeight: 8 }} />
         <StyledBox>
-      <Typography variant="h6" gutterBottom>
-        {formatDistance(totalDistance)}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        {formatTime(Math.round(totalMinutes))}
-      </Typography>
-      {allPointsCovered() && (
-        <Typography variant="body1" color="error" gutterBottom>
-          Game Over!
-        </Typography>
-      )}
-    
-      <Typography variant="body1" gutterBottom>
-        {gameState.game_id}
-      </Typography>
-      <Box display="flex" flexDirection="row">
-        {/* <Button variant="outlined" onClick={resetDrawing}>
+          <Typography variant='h6' gutterBottom>
+            {formatDistance(totalDistance)}
+          </Typography>
+          <Typography variant='body1' gutterBottom>
+            {formatTime(Math.round(totalMinutes))}
+          </Typography>
+          {allPointsCovered() && (
+            <Typography variant='body1' color='error' gutterBottom>
+              Game Over!
+            </Typography>
+          )}
+
+          <Typography variant='body1' gutterBottom>
+            {gameState.game_id}
+          </Typography>
+          <Box display='flex' flexDirection='row'>
+            {/* <Button variant="outlined" onClick={resetDrawing}>
           Reset
         </Button> */}
-      </Box>
-    </StyledBox>
+          </Box>
+        </StyledBox>
       </GoogleMap>
     </LoadScript>
   );
