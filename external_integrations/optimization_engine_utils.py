@@ -15,7 +15,9 @@ MOCK = False
 
 
 def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache=False):
-    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id, use_cache)
+    deadhead_index, stops = solve_tsp_from_coordinate_list(
+        short_coordinates, game_id, use_cache
+    )
 
     print(f"tsp_stops:{stops}")
 
@@ -31,8 +33,12 @@ def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache
     return url, distance, duration, coordinates
 
 
-def get_distance_and_duration_from_game_id_and_compare_with_brute(short_coordinates, game_id, use_cache=False):
-    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id, use_cache)
+def get_distance_and_duration_from_game_id_and_compare_with_brute(
+    short_coordinates, game_id, use_cache=False
+):
+    deadhead_index, stops = solve_tsp_from_coordinate_list(
+        short_coordinates, game_id, use_cache
+    )
 
     print(f"tsp_stops:{stops}")
 
@@ -82,14 +88,21 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
         with open(output_file_name, "r") as fid:
             return fid.read().split("\n")
 
-    maximal_deadhead = \
-        max(set([v['duration'] for k, inner_dict in deadhead_index.items() for ik, v in inner_dict.items()]))
+    maximal_deadhead = max(
+        set(
+            [
+                v["duration"]
+                for k, inner_dict in deadhead_index.items()
+                for ik, v in inner_dict.items()
+            ]
+        )
+    )
 
     # TSP solves a circular solution (returns to the origin) We will add 2 more auxiliary nodes that will play the
     # role of the first/last node
 
     maxINF = maximal_deadhead  # 'small INF'
-    minMaxINF = 0*maximal_deadhead  # '0'
+    minMaxINF = 0 * maximal_deadhead  # '0'
 
     starting_index = str(len(deadhead_index))
     ending_index = str(len(deadhead_index) + 1)
@@ -98,61 +111,72 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     for source_node in deadhead_index:
         # Add starting and ending index nodes to each dictionary
 
-        deadhead_index[source_node][starting_index] = deepcopy(deadhead_index[str(0)][str(0)])
-        deadhead_index[source_node][ending_index] = deepcopy(deadhead_index[str(0)][str(0)])
+        deadhead_index[source_node][starting_index] = deepcopy(
+            deadhead_index[str(0)][str(0)]
+        )
+        deadhead_index[source_node][ending_index] = deepcopy(
+            deadhead_index[str(0)][str(0)]
+        )
 
     for node in deadhead_index:
-        deadhead_index[node][node]['origin_idx'] = node
-        deadhead_index[node][node]['destination_idx'] = node
-        deadhead_index[node][node]['distance'] = 0
-        deadhead_index[node][node]['duration'] = 0
+        deadhead_index[node][node]["origin_idx"] = node
+        deadhead_index[node][node]["destination_idx"] = node
+        deadhead_index[node][node]["distance"] = 0
+        deadhead_index[node][node]["duration"] = 0
 
-        deadhead_index[starting_index][node]['origin_idx'] = starting_index
-        deadhead_index[starting_index][node]['destination_idx'] = node
-        deadhead_index[starting_index][node]['distance'] = minMaxINF
-        deadhead_index[starting_index][node]['duration'] = minMaxINF
-        deadhead_index[starting_index][node]['origin'] = [None, None]
-        deadhead_index[starting_index][node]['destination'] = [None, None]
+        deadhead_index[starting_index][node]["origin_idx"] = starting_index
+        deadhead_index[starting_index][node]["destination_idx"] = node
+        deadhead_index[starting_index][node]["distance"] = minMaxINF
+        deadhead_index[starting_index][node]["duration"] = minMaxINF
+        deadhead_index[starting_index][node]["origin"] = [None, None]
+        deadhead_index[starting_index][node]["destination"] = [None, None]
 
-        deadhead_index[ending_index][node]['origin_idx'] = ending_index
-        deadhead_index[ending_index][node]['destination_idx'] = node
-        deadhead_index[ending_index][node]['distance'] = maxINF
-        deadhead_index[ending_index][node]['duration'] = maxINF
-        deadhead_index[ending_index][node]['origin'] = [None, None]
-        deadhead_index[ending_index][node]['destination'] = [None, None]
+        deadhead_index[ending_index][node]["origin_idx"] = ending_index
+        deadhead_index[ending_index][node]["destination_idx"] = node
+        deadhead_index[ending_index][node]["distance"] = maxINF
+        deadhead_index[ending_index][node]["duration"] = maxINF
+        deadhead_index[ending_index][node]["origin"] = [None, None]
+        deadhead_index[ending_index][node]["destination"] = [None, None]
 
-        deadhead_index[node][starting_index]['origin_idx'] = node
-        deadhead_index[node][starting_index]['destination_idx'] = starting_index
-        deadhead_index[node][starting_index]['distance'] = maxINF
-        deadhead_index[node][starting_index]['duration'] = maxINF
-        deadhead_index[node][starting_index]['origin'] = [None, None]
-        deadhead_index[node][starting_index]['destination'] = [None, None]
+        deadhead_index[node][starting_index]["origin_idx"] = node
+        deadhead_index[node][starting_index]["destination_idx"] = starting_index
+        deadhead_index[node][starting_index]["distance"] = maxINF
+        deadhead_index[node][starting_index]["duration"] = maxINF
+        deadhead_index[node][starting_index]["origin"] = [None, None]
+        deadhead_index[node][starting_index]["destination"] = [None, None]
 
-        deadhead_index[node][ending_index]['origin_idx'] = node
-        deadhead_index[node][ending_index]['destination_idx'] = ending_index
-        deadhead_index[node][ending_index]['distance'] = minMaxINF
-        deadhead_index[node][ending_index]['duration'] = minMaxINF
-        deadhead_index[node][ending_index]['origin'] = [None, None]
-        deadhead_index[node][ending_index]['destination'] = [None, None]
+        deadhead_index[node][ending_index]["origin_idx"] = node
+        deadhead_index[node][ending_index]["destination_idx"] = ending_index
+        deadhead_index[node][ending_index]["distance"] = minMaxINF
+        deadhead_index[node][ending_index]["duration"] = minMaxINF
+        deadhead_index[node][ending_index]["origin"] = [None, None]
+        deadhead_index[node][ending_index]["destination"] = [None, None]
 
-        deadhead_index[starting_index][ending_index]['origin_idx'] = starting_index
-        deadhead_index[starting_index][ending_index]['destination_idx'] = ending_index
-        deadhead_index[starting_index][ending_index]['distance'] = maxINF
-        deadhead_index[starting_index][ending_index]['duration'] = maxINF
-        deadhead_index[starting_index][ending_index]['origin'] = [None, None]
-        deadhead_index[starting_index][ending_index]['destination'] = [None, None]
+        deadhead_index[starting_index][ending_index]["origin_idx"] = starting_index
+        deadhead_index[starting_index][ending_index]["destination_idx"] = ending_index
+        deadhead_index[starting_index][ending_index]["distance"] = maxINF
+        deadhead_index[starting_index][ending_index]["duration"] = maxINF
+        deadhead_index[starting_index][ending_index]["origin"] = [None, None]
+        deadhead_index[starting_index][ending_index]["destination"] = [None, None]
 
-        deadhead_index[ending_index][starting_index]['origin_idx'] = ending_index
-        deadhead_index[ending_index][starting_index]['destination_idx'] = starting_index
-        deadhead_index[ending_index][starting_index]['distance'] = minMaxINF
-        deadhead_index[ending_index][starting_index]['duration'] = minMaxINF
-        deadhead_index[ending_index][starting_index]['origin'] = [None, None]
-        deadhead_index[ending_index][starting_index]['destination'] = [None, None]
+        deadhead_index[ending_index][starting_index]["origin_idx"] = ending_index
+        deadhead_index[ending_index][starting_index]["destination_idx"] = starting_index
+        deadhead_index[ending_index][starting_index]["distance"] = minMaxINF
+        deadhead_index[ending_index][starting_index]["duration"] = minMaxINF
+        deadhead_index[ending_index][starting_index]["origin"] = [None, None]
+        deadhead_index[ending_index][starting_index]["destination"] = [None, None]
 
     # Make a symmetric TSP out of the asymmetric problem we have
 
-    sum_of_all_deadheads = \
-        sum(set([v['duration'] for k, inner_dict in deadhead_index.items() for ik, v in inner_dict.items()]))
+    sum_of_all_deadheads = sum(
+        set(
+            [
+                v["duration"]
+                for k, inner_dict in deadhead_index.items()
+                for ik, v in inner_dict.items()
+            ]
+        )
+    )
 
     INF = str(sum_of_all_deadheads)  # 'large INF'
     mINF = str(-sum_of_all_deadheads)  # '-large INF'
@@ -164,18 +188,30 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
         for k2 in range(dimension):
             if k1 == k2:
                 continue
-            int_duration12 = str(deadhead_index[str(k1)][str(k2)]['duration'])
-            int_duration21 = str(deadhead_index[str(k2)][str(k1)]['duration'])
-            durations[int(k1)][int(k2)] = durations[dimension + int(k1)][dimension + int(k2)] = INF
-            durations[int(k2)][int(k1)] = durations[dimension + int(k2)][dimension + int(k1)] = INF
+            int_duration12 = str(deadhead_index[str(k1)][str(k2)]["duration"])
+            int_duration21 = str(deadhead_index[str(k2)][str(k1)]["duration"])
+            durations[int(k1)][int(k2)] = durations[dimension + int(k1)][
+                dimension + int(k2)
+            ] = INF
+            durations[int(k2)][int(k1)] = durations[dimension + int(k2)][
+                dimension + int(k1)
+            ] = INF
 
-            durations[dimension + int(k1)][int(k2)] = durations[int(k2)][dimension + int(k1)] = int_duration12
-            durations[dimension + int(k2)][int(k1)] = durations[int(k1)][dimension + int(k2)] = int_duration21
+            durations[dimension + int(k1)][int(k2)] = durations[int(k2)][
+                dimension + int(k1)
+            ] = int_duration12
+            durations[dimension + int(k2)][int(k1)] = durations[int(k1)][
+                dimension + int(k2)
+            ] = int_duration21
             # durations[int(k1)][dimension + int(k2)] = int_duration12
             # durations[dimension + int(k2)][int(k1)] = int_duration21
 
-        durations[int(k1)][int(k1)] = durations[dimension + int(k1)][dimension + int(k1)] = '0'
-        durations[int(k1)][dimension + int(k1)] = durations[dimension + int(k1)][int(k1)] = mINF
+        durations[int(k1)][int(k1)] = durations[dimension + int(k1)][
+            dimension + int(k1)
+        ] = "0"
+        durations[int(k1)][dimension + int(k1)] = durations[dimension + int(k1)][
+            int(k1)
+        ] = mINF
 
     duration_str = []
     for line_idx, duration_line in enumerate(durations):
@@ -199,7 +235,7 @@ EOF""".format(
 
     try:
         os.system(
-            "python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
+            "python ../external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
                 input_file_name, output_file_name
             )
         )
@@ -219,22 +255,36 @@ EOF""".format(
         print(duration_str)
     symmetric_output_file_name = os.path.join(game_dir, "output.res")
 
-    with open(symmetric_output_file_name, 'r') as fid:
+    with open(symmetric_output_file_name, "r") as fid:
         # Remove \n and remove any auxiliary index
-        asymmetric_output_columns = fid.read().split('\n')
+        asymmetric_output_columns = fid.read().split("\n")
         print(asymmetric_output_columns)
         asymmetric_output_columns = asymmetric_output_columns[:-1][::2]
         print(asymmetric_output_columns)
 
-        max1_index, max2_index = [i for i,j in sorted(list(enumerate(asymmetric_output_columns)),
-                                                      key=lambda x:int(x[1]), reverse=True)[:2]]
+        max1_index, max2_index = [
+            i
+            for i, j in sorted(
+                list(enumerate(asymmetric_output_columns)),
+                key=lambda x: int(x[1]),
+                reverse=True,
+            )[:2]
+        ]
 
         if max2_index < max1_index:
-            asymmetric_output_columns = list(reversed(list(asymmetric_output_columns[max1_index+1:] +
-                                                      asymmetric_output_columns[:max2_index])))
+            asymmetric_output_columns = list(
+                reversed(
+                    list(
+                        asymmetric_output_columns[max1_index + 1 :]
+                        + asymmetric_output_columns[:max2_index]
+                    )
+                )
+            )
         else:
-            asymmetric_output_columns = list(asymmetric_output_columns[max2_index+1:] +
-                                             asymmetric_output_columns[:max1_index])
+            asymmetric_output_columns = list(
+                asymmetric_output_columns[max2_index + 1 :]
+                + asymmetric_output_columns[:max1_index]
+            )
         print(asymmetric_output_columns)
         # asymmetric_output_columns = asymmetric_output_columns[2:]
         print(asymmetric_output_columns)
@@ -253,6 +303,7 @@ def brute_force_solution(deadhead_index, game_id):
     all_stop_indices = list(deadhead_index.keys())
     print("Finding a brute force solution over {} stops".format(len(all_stop_indices)))
     import itertools
+
     # Generate all permutations
     permutations = itertools.permutations(all_stop_indices)
     best_duration = float("inf")
@@ -268,7 +319,9 @@ def brute_force_solution(deadhead_index, game_id):
         if perm_duration < best_duration:
             best_duration = perm_duration
             best_perm = permutation
-    print(f"Checked {number_of_permutations_checked} permutations for {len(all_stop_indices)} stops")
+    print(
+        f"Checked {number_of_permutations_checked} permutations for {len(all_stop_indices)} stops"
+    )
     indices = list(best_perm)
     with open(output_file_name, "w") as fid:
         fid.write("\n".join(indices))
