@@ -8,7 +8,10 @@ sys.path.append(os.getcwd() + "/..")
 from external_integrations.optimization_engine_utils import (
     get_distance_and_duration_from_game_id,
 )
-from external_integrations.gmaps_integration_utils import get_distance_and_duration
+from external_integrations.gmaps_integration_utils import (
+    generate_random_coordinates,
+    get_distance_and_duration,
+)
 from locations import locations
 
 
@@ -19,21 +22,25 @@ def get_game(game_id):
     return game_dict[game_id]
 
 
-def create_game(location, code, background_tasks: BackgroundTasks):
+def create_game(location, code, random, background_tasks: BackgroundTasks):
 
     new_game_id = code or generate_random_string()
     print("creating game", new_game_id)
-    if location not in locations:
-        raise HTTPException(status_code=400, detail="Location doesn't exists")
+    if random:
+        _, coordinates = generate_random_coordinates(location, 9)
+    else:
+        if location not in locations:
+            raise HTTPException(status_code=400, detail="Location doesn't exists")
+        coordinates = locations[location]
 
     game_dict[new_game_id] = {
-        "location": {"name": location, "coordinates": locations[location]},
+        "location": {"name": location, "coordinates": coordinates},
         "game_id": new_game_id,
         "contestants": {},
         "status": "running",
     }
     if background_tasks is not None:
-        background_tasks.add_task(solve, new_game_id, location, locations[location])
+        background_tasks.add_task(solve, new_game_id, location, coordinates)
 
     return get_game(new_game_id)
 
@@ -42,7 +49,7 @@ def solve(game_id, location, coordinates):
     # call to mock solutoin
     get_distance_and_duration_from_game_id
     url, distance, duration, coordinates_solution = (
-        get_distance_and_duration_from_game_id(coordinates, location)
+        get_distance_and_duration_from_game_id(coordinates, game_id)
     )
     # print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
     game_dict[game_id]["solution"] = {
@@ -88,4 +95,4 @@ def add_submit(game_id, name, indexes):
     curr_game["contestants"][name]["status"] = "done"
 
 
-create_game("Tel Aviv", "TEST", None)
+create_game("Tel Aviv", "TEST", None, None)

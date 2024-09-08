@@ -92,16 +92,16 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
         for k2 in range(dimension):
             if k1 == k2:
                 continue
-            int_duration12 = str(deadhead_index[str(k1)][str(k2)]['duration'])
-            int_duration21 = str(deadhead_index[str(k2)][str(k1)]['duration'])
+            int_duration12 = str(deadhead_index[str(k1)][str(k2)]["duration"])
+            int_duration21 = str(deadhead_index[str(k2)][str(k1)]["duration"])
             durations[int(k1)][int(k2)] = INF
             durations[int(k2)][int(k1)] = INF
             durations[dimension + int(k1)][dimension + int(k2)] = INF
             durations[dimension + int(k2)][dimension + int(k1)] = INF
             durations[int(k1)][dimension + int(k2)] = int_duration12
             durations[dimension + int(k2)][int(k1)] = int_duration21
-        durations[int(k1)][int(k1)] = '0'
-        durations[dimension + int(k1)][dimension + int(k1)] = '0'
+        durations[int(k1)][int(k1)] = "0"
+        durations[dimension + int(k1)][dimension + int(k1)] = "0"
         durations[int(k1)][dimension + int(k1)] = mINF
         durations[dimension + int(k1)][int(k1)] = mINF
 
@@ -127,7 +127,7 @@ EOF""".format(
 
     try:
         os.system(
-            "python ./external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
+            "python ../external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
                 input_file_name, output_file_name
             )
         )
@@ -136,8 +136,8 @@ EOF""".format(
         print("Oh boy we are Hackathoning")
     symmetric_output_file_name = os.path.join(game_dir, "good_output.txt")
     symmetric_output_file_name = os.path.join(game_dir, "output.txt")
-    with open(symmetric_output_file_name, 'r') as fid:
-        asymmetric_output_columns = fid.read().split('\n')[:-1][::2]
+    with open(symmetric_output_file_name, "r") as fid:
+        asymmetric_output_columns = fid.read().split("\n")[:-1][::2]
     asymmetric_output_file_name = os.path.join(game_dir, "asym-good_output.txt")
     with open(asymmetric_output_file_name, "w") as fid:
         fid.write("\n".join(asymmetric_output_columns))

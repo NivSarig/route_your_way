@@ -42,7 +42,7 @@ const StyledButton = styled(Button)(({ disabled }) => ({
   width: disabled ? "100px" : "140px",
   marginTop: disabled ? "70px" : "50px",
 }));
-const cities = ["London", "Tel Aviv"];
+const cities = ["London", "Tel Aviv", "Paris", "New York", "Sao Paulo"];
 
 function CreateGamePage() {
   const [city, setCity] = useState<string>("");
@@ -51,7 +51,7 @@ function CreateGamePage() {
   const handleChange = (event: SelectChangeEvent) => {
     setCity(event.target.value);
   };
-  const handleNameChange = (event) => {
+  const handleNameChange = event => {
     setName(event.target.value);
   };
 
@@ -62,11 +62,12 @@ function CreateGamePage() {
       `${BACKEND}/game?` +
         new URLSearchParams({
           location: city,
+          random: "false",
         }),
       {
         method: "PUT",
       }
-    ).then(async (response) => {
+    ).then(async response => {
       const newGameState = await response.json();
       console.log("newly created game", newGameState);
       navigate("/map", { state: { name: name, code: newGameState.game_id } });
@@ -80,14 +81,12 @@ function CreateGamePage() {
           displayEmpty
           onChange={handleChange}
           sx={{ borderRadius: "40px" }}
-          IconComponent={() => (
-            <img alt="arrow" src={selectArrow} style={{ width: "50px" }} />
-          )}
+          IconComponent={() => <img alt='arrow' src={selectArrow} style={{ width: "50px" }} />}
         >
           <MenuItem value={""}>
             <em>Select city</em>
           </MenuItem>
-          {cities.map((city) => (
+          {cities.map(city => (
             <MenuItem value={city}>{city}</MenuItem>
           ))}
         </StyledSelect>
@@ -98,16 +97,14 @@ function CreateGamePage() {
               marginTop: "15px",
               borderRadius: "40px",
             }}
-            autoComplete="off"
-            label="Name"
-            variant="filled"
+            autoComplete='off'
+            label='Name'
+            variant='filled'
             value={name}
             onChange={handleNameChange}
           />
         )}
-        {city && (
-          <StyledButton disabled={!name} onClick={onCreate}></StyledButton>
-        )}
+        {city && <StyledButton disabled={!name} onClick={onCreate}></StyledButton>}
       </ContentContainer>
     </Container>
   );
