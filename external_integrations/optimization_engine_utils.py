@@ -30,7 +30,34 @@ def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache
     return url, distance, duration, coordinates
 
 
-def solve_tsp_from_coordinate_list(coordinates_list, game_id):
+def get_distance_and_duration_from_game_id_and_compare_with_brute(short_coordinates, game_id, use_cache=False):
+    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id, use_cache)
+
+    print(f"tsp_stops:{stops}")
+
+    coordinates = []
+
+    for stop in stops:
+        coordinates.append(tuple(deadhead_index[stop][stops[0]]["origin"]))
+    distance, duration = get_distance_and_duration(coordinates)
+
+    brute_coordinates = []
+    brute_stops = brute_force_solution(deadhead_index, game_id)
+    print(f"brute_stops: {brute_stops}")
+
+    for stop in brute_stops:
+        brute_coordinates.append(tuple(deadhead_index[stop][brute_stops[0]]["origin"]))
+
+    url = get_url_from_coordinates(coordinates)
+    brute_distance, brute_duration = get_distance_and_duration(brute_coordinates)
+    print(f"tsp_stops: {stops}\nbrute_stop: {brute_stops}")
+    print(f"brute_distance: {brute_distance}, brute_duration: {brute_duration}")
+    print(f"tsp_distance: {distance}, tsp_duration: {duration}")
+    assert brute_stops == stops
+    return url, distance, duration, coordinates, brute_stops, stops
+
+
+def solve_tsp_from_coordinate_list(coordinates_list, game_id, use_cache):
 
     game_directory = os.path.join(os.getcwd(), game_id)
     if not os.path.exists(game_directory):
@@ -135,6 +162,35 @@ EOF""".format(
     with open(asymmetric_output_file_name, "w") as fid:
         fid.write("\n".join(asymmetric_output_columns))
     return asymmetric_output_columns
+
+
+def brute_force_solution(deadhead_index, game_id):
+
+    game_directory = os.path.join(os.getcwd(), game_id)
+    output_file_name = os.path.join(game_directory, "brute_output.res")
+    all_stop_indices = list(deadhead_index.keys())
+    print("Finding a brute force solution over {} stops".format(len(all_stop_indices)))
+    import itertools
+    # Generate all permutations
+    permutations = itertools.permutations(all_stop_indices)
+    best_duration = float("inf")
+    best_perm = None
+    number_of_permutations_checked = 0
+    for permutation in permutations:
+        number_of_permutations_checked += 1
+        perm_duration = 0
+        for perm_pair in pairwise(permutation):
+            perm_duration += deadhead_index[str(perm_pair[0])][str(perm_pair[1])][
+                "duration"
+            ]
+        if perm_duration < best_duration:
+            best_duration = perm_duration
+            best_perm = permutation
+    print(f"Checked {number_of_permutations_checked} permutations for {len(all_stop_indices)} stops")
+    indices = list(best_perm)
+    with open(output_file_name, "w") as fid:
+        fid.write("\n".join(indices))
+    return indices
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ def solve(game_id, location, coordinates):
     url, distance, duration, coordinates_solution = (
         get_distance_and_duration_from_game_id(coordinates, location, use_cache=False)
     )
-    # print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
+    print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
     game_dict[game_id]["solution"] = {
         "url": url,
         "distance": distance,
