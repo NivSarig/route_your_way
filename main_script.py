@@ -69,6 +69,9 @@ if __name__ == "__main__":
     game_id = "London"
     # game_id = "TelAviv"
     # game_id = "Short"
+    use_cache = True
+
     short_coordinates = locations[game_id]
-    url, distance, duration, coordinates = get_distance_and_duration_from_game_id(short_coordinates, game_id)
+    url, distance, duration, coordinates = get_distance_and_duration_from_game_id(
+            short_coordinates, game_id, use_cache=use_cache)
     print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
