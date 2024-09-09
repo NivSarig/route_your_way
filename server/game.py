@@ -41,8 +41,9 @@ def create_game(location, code, background_tasks: BackgroundTasks):
 def solve(game_id, location, coordinates):
     # call to mock solutoin
     get_distance_and_duration_from_game_id
+    # From the actual game we will refresh cache for deadhead matrix hence use_cache=False
     url, distance, duration, coordinates_solution = (
-        get_distance_and_duration_from_game_id(coordinates, location)
+        get_distance_and_duration_from_game_id(coordinates, location, use_cache=False)
     )
     # print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
     game_dict[game_id]["solution"] = {

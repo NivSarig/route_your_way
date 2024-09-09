@@ -1,8 +1,6 @@
 import os
-import shutil
 import time
 from random import random
-import json
 
 from external_integrations.gmaps_integration_utils import (
     build_all_duration_matrix,
@@ -15,9 +13,10 @@ MOCK = "brute"
 MOCK = False
 
 
-def get_distance_and_duration_from_game_id(short_coordinates, game_id):
-    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id)
-    print(stops)
+def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache=False):
+    deadhead_index, stops = solve_tsp_from_coordinate_list(short_coordinates, game_id, use_cache)
+
+    print(f"tsp_stops:{stops}")
 
     coordinates = []
 
@@ -26,6 +25,8 @@ def get_distance_and_duration_from_game_id(short_coordinates, game_id):
 
     url = get_url_from_coordinates(coordinates)
     distance, duration = get_distance_and_duration(coordinates)
+
+    print(f"tsp_distance: {distance}, tsp_duration: {duration}")
     return url, distance, duration, coordinates
 
 
@@ -35,16 +36,8 @@ def solve_tsp_from_coordinate_list(coordinates_list, game_id):
     if not os.path.exists(game_directory):
         os.mkdir(game_directory)
 
-    deadhead_file_path = os.path.join(
-        game_directory, "deadhead_index_{}.json".format(game_id)
-    )
-    if not os.path.exists(deadhead_file_path):
-        deadhead_index = build_all_duration_matrix(coordinates_list)
+    deadhead_index = build_all_duration_matrix(coordinates_list, use_cache)
 
-        with open(deadhead_file_path, "w") as fid:
-            json.dump(deadhead_index, fid)
-    with open(deadhead_file_path, "r") as fid:
-        deadhead_index = json.load(fid)
     return deadhead_index, solve_tsp_for_deadhead_index(
         deadhead_index, game_directory, game_id, mock=MOCK
     )
