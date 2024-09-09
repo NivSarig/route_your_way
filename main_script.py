@@ -1,6 +1,7 @@
 from external_integrations.gmaps_integration_utils import generate_random_coordinates
 
-from external_integrations.optimization_engine_utils import get_distance_and_duration_from_game_id
+from external_integrations.optimization_engine_utils import get_distance_and_duration_from_game_id, \
+    get_distance_and_duration_from_game_id_and_compare_with_brute
 # from logging_utils import formatted_now
 import logging
 logger = logging.getLogger(__name__)
@@ -41,7 +42,36 @@ if __name__ == "__main__":
         (55.8851468503753, 37.51883085420433),
         (55.64084712224211, 37.63753714586377),
     ],
+        "Short3": [
+        (55.8851468503753, 37.51883085420433),
+        (55.64084712224211, 37.63753714586377),
+        (55.74084712224211, 37.33753714586377),
+    ],
+        "Short5": [
+        (55.8851468503753, 37.51883085420433),
+        (55.64084712224211, 37.63753714586377),
+        (55.74084712224211, 37.33753714586377),
+        (55.44084712224211, 37.23753714586377),
+    ],
+        "Short4": [
+        (55.8851468503753, 37.51883085420433),
+        (55.64084712224211, 37.63753714586377),
+        (55.74084712224211, 37.33753714586377),
+        (55.44084712224211, 37.23753714586377),
+        (55.44084712224211, 37.43753714586377),
+    ],
         "TelAviv": [
+            [32.1732507, 34.7894517],
+            [32.0694666, 34.7699549],
+            [32.0737261, 34.765359],
+            [32.1145883, 34.8015212],
+            [32.0779325, 34.7741353],
+            [32.0610971, 34.7919043],
+            [32.0810915, 34.7889161],
+            [32.0633681, 34.7728317],
+            [32.0728065, 34.7948381]
+        ],
+        "TelAvivBad": [
             [32.0732507, 34.7894517],
             [32.0694666, 34.7699549],
             [32.0737261, 34.765359],
@@ -64,6 +94,39 @@ if __name__ == "__main__":
             [51.5368766, -0.0945162],
             [51.512813, -0.0836868],
             [51.515942, -0.0908033],
+        ],
+        "London8": [
+            [51.5229532, -0.0805527],
+            [51.5190351, -0.0704977],
+            [51.5289369, -0.0620099],
+            [51.5163462, -0.0468525],
+            [51.5322395, -0.0882468],
+            [51.5083975, -0.07886],
+            [51.5205595, -0.0380812],
+            [51.5227271, -0.0925782]
+        ],
+        "London9": [
+            [51.5229532, -0.0805527],
+            [51.5190351, -0.0704977],
+            [51.5289369, -0.0620099],
+            [51.5163462, -0.0468525],
+            [51.5322395, -0.0882468],
+            [51.5083975, -0.07886],
+            [51.5205595, -0.0380812],
+            [51.5227271, -0.0925782],
+            [51.5368766, -0.0945162]
+        ],
+        "London10": [
+            [51.5229532, -0.0805527],
+            [51.5190351, -0.0704977],
+            [51.5289369, -0.0620099],
+            [51.5163462, -0.0468525],
+            [51.5322395, -0.0882468],
+            [51.5083975, -0.07886],
+            [51.5205595, -0.0380812],
+            [51.5227271, -0.0925782],
+            [51.5368766, -0.0945162],
+            [51.512813, -0.0836868],
         ]
     }
     game_id = "London"
@@ -75,3 +138,20 @@ if __name__ == "__main__":
     url, distance, duration, coordinates = get_distance_and_duration_from_game_id(
             short_coordinates, game_id, use_cache=use_cache)
     print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
+    # exit()
+    all_games = {}
+
+    for game_id in locations:
+        if game_id == "TelAviv":
+            continue
+        short_coordinates = locations[game_id]
+        url, distance, duration, coordinates, brute_stops, stops = \
+            get_distance_and_duration_from_game_id_and_compare_with_brute(
+                short_coordinates, game_id, use_cache=use_cache)
+        print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
+        all_games[game_id] = {"game_id": game_id, "brute_stops": brute_stops, "stops": stops}
+
+    for game_id, game in all_games.items():
+        print(game_id)
+        print(game['brute_stops'])
+        print(game['stops'])
