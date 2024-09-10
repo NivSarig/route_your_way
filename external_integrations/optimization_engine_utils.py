@@ -16,9 +16,9 @@ MOCK = False
 TSP_PATH = os.environ.get('TSP_PATH', "../external_integrations/optimization_engine/solve_tsp.py")
 
 
-def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache=False):
+def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache=False, location=None):
     deadhead_index, stops = solve_tsp_from_coordinate_list(
-        short_coordinates, game_id, use_cache
+        short_coordinates, game_id, use_cache, location
     )
 
     print(f"tsp_stops:{stops}")
@@ -64,7 +64,7 @@ def get_distance_and_duration_from_game_id_and_compare_with_brute(
     return url, distance, duration, coordinates, brute_stops, stops
 
 
-def solve_tsp_from_coordinate_list(coordinates_list, game_id, use_cache):
+def solve_tsp_from_coordinate_list(coordinates_list, game_id, use_cache, location):
 
     game_directory = os.path.join(os.getcwd(), game_id)
     if not os.path.exists(game_directory):
@@ -73,11 +73,11 @@ def solve_tsp_from_coordinate_list(coordinates_list, game_id, use_cache):
     deadhead_index = build_all_duration_matrix(coordinates_list, use_cache)
 
     return deadhead_index, solve_tsp_for_deadhead_index(
-        deepcopy(deadhead_index), game_directory, game_id, mock=MOCK
+        deepcopy(deadhead_index), game_directory, game_id, mock=MOCK, location=location
     )
 
 
-def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
+def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK, location=None):
     if not os.path.exists(game_dir):
         os.mkdir(game_dir)
     input_file_name = os.path.join(game_dir, "input.tsp")
@@ -219,14 +219,14 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     duration_str = "\n".join(duration_str)
     file_content = """NAME: {}
 TYPE: TSP
-COMMENT: Niv
+COMMENT: Location {}
 DIMENSION: {}
 EDGE_WEIGHT_TYPE: EXPLICIT
 EDGE_WEIGHT_FORMAT: LOWER_DIAG_ROW
 EDGE_WEIGHT_SECTION
 {}
 EOF""".format(
-        game_id, tsp_dimension, duration_str
+        game_id, location or game_id, tsp_dimension, duration_str
     )
 
     with open(input_file_name, "w") as fid:
@@ -259,6 +259,10 @@ EOF""".format(
         # Remove \n and remove any auxiliary index
         asymmetric_output_columns = fid.read().split('\n')
         asymmetric_output_columns = asymmetric_output_columns[:-1][::2]
+        if len(set(asymmetric_output_columns)) != dimension:
+            raise Exception(f"The {game_id} game in location {location} can not be solved efficiently with our current "
+                            f"algorithm Please try a different one.")
+
         max1_index, max2_index = [i for i, j in sorted(list(enumerate(asymmetric_output_columns)),
                                                       key=lambda x:int(x[1]), reverse=True)[:2]]
 
