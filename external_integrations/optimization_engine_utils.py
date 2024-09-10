@@ -13,6 +13,8 @@ from external_integrations.gmaps_integration_utils import (
 MOCK = "brute"
 MOCK = False
 
+TSP_PATH = os.environ.get('TSP_PATH', "../external_integrations/optimization_engine/solve_tsp.py")
+
 
 def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache=False):
     deadhead_index, stops = solve_tsp_from_coordinate_list(
@@ -233,8 +235,8 @@ EOF""".format(
 
     try:
         os.system(
-            "python ../external_integrations/optimization_engine/solve_tsp.py --input {} --output  {}".format(
-                input_file_name, output_file_name
+            "python {} --input {} --output  {}".format(
+                TSP_PATH, input_file_name, output_file_name
             )
         )
         print("TSP found a circular solution")
