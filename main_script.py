@@ -295,27 +295,28 @@ if __name__ == "__main__":
     # game_id = "TelAvivBad"
     # game_id = "Short"
     use_cache = True
+    benchmarking_with_brute = False
 
-    short_coordinates = locations[game_id]
-
-    # short_coordinates = short_coordinates + [[la+1, lo-1] for la,lo in short_coordinates]
-
-    url, distance, duration, coordinates = get_distance_and_duration_from_game_id(
-            short_coordinates, game_id, use_cache=use_cache)
-    print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
-    exit()
-    all_games = {}
-    for game_id in ['Short', 'Short3', 'Short5', 'Short4', 'TelAviv', 'TelAviv6', 'TelAvivBad', 'London8', 'London9', 'London10', 'London6']:
-        # if game_id == "TelAviv":
-        #     continue
+    if not benchmarking_with_brute:
         short_coordinates = locations[game_id]
-        url, distance, duration, coordinates, brute_stops, stops = \
-            get_distance_and_duration_from_game_id_and_compare_with_brute(
+
+        # short_coordinates = short_coordinates + [[la+1, lo-1] for la,lo in short_coordinates]
+
+        url, distance, duration, coordinates = get_distance_and_duration_from_game_id(
                 short_coordinates, game_id, use_cache=use_cache)
         print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
-        all_games[game_id] = {"game_id": game_id, "brute_stops": brute_stops, "stops": stops}
+    else:
+        all_games = {}
+        for game_id in ['Short', 'Short3', 'Short5', 'Short4', 'TelAviv', 'TelAviv6', 'TelAvivBad', 'London8', 'London9',
+                        'London10', 'London6']:
+            short_coordinates = locations[game_id]
+            url, distance, duration, coordinates, brute_stops, stops = \
+                get_distance_and_duration_from_game_id_and_compare_with_brute(
+                    short_coordinates, game_id, use_cache=use_cache)
+            print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
+            all_games[game_id] = {"game_id": game_id, "brute_stops": brute_stops, "stops": stops}
 
-    for game_id, game in all_games.items():
-        print(game_id)
-        print(game['brute_stops'])
-        print(game['stops'])
+        for game_id, game in all_games.items():
+            print(game_id)
+            print(game['brute_stops'])
+            print(game['stops'])
