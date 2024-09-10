@@ -99,6 +99,10 @@ function LeadingBoard() {
               );
             })
         );
+      })
+      .catch(error => {
+        console.log("failed to get response", error);
+        alert("Lost connection with the server");
       });
     };
     poll();
