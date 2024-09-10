@@ -50,8 +50,6 @@ def get_distance_and_duration_from_game_id_and_compare_with_brute(
 
     brute_coordinates = []
     brute_stops = brute_force_solution(deadhead_index, game_id)
-    print(f"brute_stops: {brute_stops}")
-
     for stop in brute_stops:
         brute_coordinates.append(tuple(deadhead_index[stop][brute_stops[0]]["origin"]))
 
@@ -179,7 +177,7 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK):
     )
 
     INF = str(sum_of_all_deadheads)  # 'large INF'
-    mINF = str(-sum_of_all_deadheads)  # '-large INF'
+    mINF = str(0)  # '0'
 
     dimension = len(deadhead_index)
     tsp_dimension = dimension * 2
@@ -257,19 +255,10 @@ EOF""".format(
 
     with open(symmetric_output_file_name, "r") as fid:
         # Remove \n and remove any auxiliary index
-        asymmetric_output_columns = fid.read().split("\n")
-        print(asymmetric_output_columns)
+        asymmetric_output_columns = fid.read().split('\n')
         asymmetric_output_columns = asymmetric_output_columns[:-1][::2]
-        print(asymmetric_output_columns)
-
-        max1_index, max2_index = [
-            i
-            for i, j in sorted(
-                list(enumerate(asymmetric_output_columns)),
-                key=lambda x: int(x[1]),
-                reverse=True,
-            )[:2]
-        ]
+        max1_index, max2_index = [i for i, j in sorted(list(enumerate(asymmetric_output_columns)),
+                                                      key=lambda x:int(x[1]), reverse=True)[:2]]
 
         if max2_index < max1_index:
             asymmetric_output_columns = list(
@@ -281,18 +270,12 @@ EOF""".format(
                 )
             )
         else:
-            asymmetric_output_columns = list(
-                asymmetric_output_columns[max2_index + 1 :]
-                + asymmetric_output_columns[:max1_index]
-            )
-        print(asymmetric_output_columns)
-        # asymmetric_output_columns = asymmetric_output_columns[2:]
-        print(asymmetric_output_columns)
+            asymmetric_output_columns = list(asymmetric_output_columns[max2_index+1:] +
+                                             asymmetric_output_columns[:max1_index])
 
     asymmetric_output_file_name = os.path.join(game_dir, "asym-good_output.res")
     with open(asymmetric_output_file_name, "w") as fid:
         fid.write("\n".join(asymmetric_output_columns))
-    print(asymmetric_output_file_name)
     return asymmetric_output_columns
 
 
