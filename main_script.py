@@ -348,7 +348,7 @@ if __name__ == "__main__":
             short_coordinates = locations[game_id]
             url, distance, duration, coordinates, brute_stops, stops = \
                 get_distance_and_duration_from_game_id_and_compare_with_brute(
-                    short_coordinates, game_id, use_cache=use_cache)
+                    short_coordinates, game_id, use_cache=use_cache, location=game_id)
             print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
             all_games[game_id] = {"game_id": game_id, "brute_stops": brute_stops, "stops": stops}
 

@@ -36,10 +36,10 @@ def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache
 
 
 def get_distance_and_duration_from_game_id_and_compare_with_brute(
-    short_coordinates, game_id, use_cache=False
+    short_coordinates, game_id, use_cache=False, location=None
 ):
     deadhead_index, stops = solve_tsp_from_coordinate_list(
-        short_coordinates, game_id, use_cache
+        short_coordinates, game_id, use_cache, location
     )
 
     print(f"tsp_stops:{stops}")
