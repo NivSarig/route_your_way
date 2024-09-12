@@ -290,9 +290,45 @@ if __name__ == "__main__":
             [51.5322395, -0.0882468],
             [51.5083975, -0.07886],
         ],
+    "Paris": [
+        [48.8566, 2.3522],
+        [48.877807, 2.351152],
+        [48.8516, 2.3772],
+        [48.850638, 2.292321],
+        [48.8738, 2.295],
+        [48.8501, 2.2679],
+        [48.8422, 2.3276],
+        [48.861, 2.3995],
+        [48.8683, 2.3425],
+        [48.832, 2.3551],
+    ],
+    "New York": [
+        [40.7293, -73.9844],
+        [40.7380, -74.0027],
+        [40.7165, -73.9946],
+        [40.7265, -73.9515],
+        [40.7143, -73.9980],
+        [40.7041, -73.9580],
+        [40.7561, -73.9903],
+        [40.7434, -73.9505],
+        [40.6947, -73.9213],
+        [40.7484, -73.9879],
+    ],
+    "Sao Paulo": [
+        [-23.5505, -46.6333],
+        [-23.5610, -46.6550],
+        [-23.5632, -46.6544],
+        [-23.5431, -46.6298],
+        [-23.5489, -46.6388],
+        [-23.5760, -46.6470],
+        [-23.5629, -46.6860],
+        [-23.5558, -46.6618],
+        [-23.6072, -46.6342],
+        [-23.5852, -46.6742],
+    ],
     }
-    game_id = "London-"
-    # game_id = "TelAvivBad"
+    game_id = "London"
+    game_id = "Paris"
     # game_id = "Short"
     use_cache = True
     benchmarking_with_brute = False
@@ -308,7 +344,7 @@ if __name__ == "__main__":
     else:
         all_games = {}
         for game_id in ['Short', 'Short3', 'Short5', 'Short4', 'TelAviv', 'TelAviv6', 'TelAvivBad', 'London8', 'London9',
-                        'London10', 'London6']:
+                        'London10', 'London6', 'Paris', 'New York', "Sao Paulo"]:
             short_coordinates = locations[game_id]
             url, distance, duration, coordinates, brute_stops, stops = \
                 get_distance_and_duration_from_game_id_and_compare_with_brute(
