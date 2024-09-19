@@ -4,7 +4,7 @@
 /lib/
 /.idea/
 **/.env
-/google_cache_path/
+#/google_cache_path/
 /*.pul
 /*.sav
 /*/*output.res
