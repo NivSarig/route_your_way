@@ -1,18 +1,9 @@
 import React from "react";
-// import logo from "./logo.svg";
 import "./App.css";
 import MapWithPolyline from "./MapWithPolyline";
-import {
-  BrowserRouter as Router,
-  Navigate,
-  Route,
-  Routes,
-  useRoutes,
-} from "react-router-dom";
-import LandingPage from "./LandingPage";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LeadingBoard from "./LeadingBoard";
 import CreateGamePage from "./CreateGamePage";
-import JoinGamePage from "./JoinGamePage";
 
 function App() {
   return (
@@ -20,10 +11,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/map" element={<MapWithPolyline />}></Route>
-          <Route path="/" element={<JoinGamePage />}></Route>
+          <Route path="/" element={<CreateGamePage />}></Route>
           <Route path="/LeadingBoard" element={<LeadingBoard />}></Route>
-          <Route path="/create" element={<CreateGamePage />}></Route>
-          <Route path="/join" element={<JoinGamePage />}></Route>
         </Routes>
       </Router>
     </div>
