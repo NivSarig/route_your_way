@@ -125,7 +125,6 @@ const MapWithPolyline = () => {
       }
     ).then(async (response) => {
       if (!response.ok) {
-        alert("Game not found");
         navigate("/");
         return;
       }
@@ -138,6 +137,14 @@ const MapWithPolyline = () => {
           lng: coord[1],
         }))
       );
+
+      // fetch(`${BACKEND}/game/${location.state.code}`, {
+      //   method: "GET",
+      // }).then(async response => {
+      //   const newGameState = await response.json();
+      //   console.log("game state", newGameState);
+      //   setGameState(newGameState);
+      // });
     });
   }, [location.state, location.state.code, navigate]);
 

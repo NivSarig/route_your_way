@@ -92,7 +92,7 @@ const StyledContinueButton = styled(Button)(() => ({
     animation: "pulse 1.6s infinite",
   },
 }));
-const cities = ["London", "Tel Aviv", "Paris", "New York", "Sao Paulo"];
+const cities = ["London", "Tel Aviv", "New York"];
 
 function CreateGamePage() {
   const [city, setCity] = useState<string>("");
@@ -117,7 +117,7 @@ function CreateGamePage() {
       const newGameState = await response.json();
       console.log("newly created game", newGameState);
       navigate("/map", {
-        state: { name: "newPlayer", code: newGameState.game_id },
+        state: { name: "Human Player", code: newGameState.game_id },
       });
     });
   };
