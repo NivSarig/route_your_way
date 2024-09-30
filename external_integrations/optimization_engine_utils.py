@@ -82,10 +82,11 @@ def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, location=Non
         os.mkdir(game_dir)
     input_file_name = os.path.join(game_dir, "input.tsp")
     output_file_name = os.path.join(game_dir, "output.res")
+    location_output_file_name = os.path.join(location, "output.res")
 
-    if os.path.exists(output_file_name) and mock is not False:
+    if os.path.exists(output_file_name) and MOCK:
         time.sleep(1.5 + random())
-        with open(output_file_name, "r") as fid:
+        with open(location_output_file_name, "r") as fid:
             return fid.read().split("\n")
 
     maximal_deadhead = max(
