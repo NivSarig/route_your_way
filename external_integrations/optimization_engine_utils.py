@@ -10,7 +10,6 @@ from external_integrations.gmaps_integration_utils import (
     get_distance_and_duration,
 )
 
-MOCK = "brute"
 MOCK = False
 
 TSP_PATH = os.environ.get('TSP_PATH', "../external_integrations/optimization_engine/solve_tsp.py")
