@@ -97,7 +97,7 @@ def get_url_from_coordinates(coordinates):
     return url
 
 
-def get_route_info(origin, destination, use_cache):
+def get_route_info(origin, destination):
     if not isinstance(origin, str):
         origin = ",".join(map(str, origin))
     if not isinstance(destination, str):
@@ -105,15 +105,14 @@ def get_route_info(origin, destination, use_cache):
     url = GOOGLE_API_URL_FORMAT.format(origin, destination, get_key())
     print(f"Fetching data from {url}")
     cache_path = os.path.join(GOOGLE_CACHE_LOCATION_PATH, "{}_{}".format(origin, destination))
-    if use_cache and os.path.exists(cache_path):
+    if os.path.exists(cache_path):
         data = json.load(open(cache_path, 'r'))
         print(f"Found data for {origin}, {destination} in cache")
     else:
         data = requests.get(url, timeout=1).json()
         print(f"Found data for {origin}, {destination}")
-        if use_cache:
-            print(f"Caching data at {cache_path}")
-            json.dump(data, open(cache_path, 'w'))
+        print(f"Caching data at {cache_path}")
+        json.dump(data, open(cache_path, 'w'))
 
     if data["status"] == "OK":
         route = data["routes"][0]
@@ -133,11 +132,11 @@ def pairwise(iterable):
     return zip(a, b)
 
 
-def get_distance_and_duration(coordinates, use_cache=True):
+def get_distance_and_duration(coordinates):
     distance = 0
     duration = 0
     for origin, destination in pairwise(coordinates):
-        seg_distance, seg_duration = get_route_info(origin, destination, use_cache)
+        seg_distance, seg_duration = get_route_info(origin, destination)
         if seg_distance is not None and seg_duration is not None:
             distance += seg_distance
             duration += seg_duration
@@ -162,7 +161,7 @@ def seconds_to_hh_mm_ss(seconds):
     return hh_mm_ss
 
 
-def build_all_duration_matrix(coordinates, use_cache):
+def build_all_duration_matrix(coordinates):
     deadhead_index = {}
     for idx, origin in enumerate(coordinates):
         for idy, destination in enumerate(coordinates):
@@ -172,7 +171,7 @@ def build_all_duration_matrix(coordinates, use_cache):
                 distance = 0
                 duration = 0
             else:
-                distance, duration = get_route_info(origin, destination, use_cache)
+                distance, duration = get_route_info(origin, destination)
             if idx not in deadhead_index:
                 deadhead_index[idx] = {}
             deadhead_index[idx][idy] = {
