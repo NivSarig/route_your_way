@@ -10,15 +10,12 @@ from external_integrations.gmaps_integration_utils import (
     get_distance_and_duration,
 )
 
-MOCK = "brute"
-MOCK = False
-
 TSP_PATH = os.environ.get('TSP_PATH', "../external_integrations/optimization_engine/solve_tsp.py")
 
 
-def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache=False, location=None):
+def get_distance_and_duration_from_game_id(short_coordinates, game_id, location, read_from_cache=True):
     deadhead_index, stops = solve_tsp_from_coordinate_list(
-        short_coordinates, game_id, use_cache, location
+        short_coordinates, game_id, location, read_from_cache
     )
 
     print(f"tsp_stops:{stops}")
@@ -36,10 +33,10 @@ def get_distance_and_duration_from_game_id(short_coordinates, game_id, use_cache
 
 
 def get_distance_and_duration_from_game_id_and_compare_with_brute(
-    short_coordinates, game_id, use_cache=False, location=None
+    short_coordinates, game_id, location, read_from_cache
 ):
     deadhead_index, stops = solve_tsp_from_coordinate_list(
-        short_coordinates, game_id, use_cache, location
+        short_coordinates, game_id, location, read_from_cache
     )
 
     print(f"tsp_stops:{stops}")
@@ -64,28 +61,32 @@ def get_distance_and_duration_from_game_id_and_compare_with_brute(
     return url, distance, duration, coordinates, brute_stops, stops
 
 
-def solve_tsp_from_coordinate_list(coordinates_list, game_id, use_cache, location):
+def solve_tsp_from_coordinate_list(coordinates_list, game_id, location, read_from_cache):
 
     game_directory = os.path.join(os.getcwd(), game_id)
     if not os.path.exists(game_directory):
         os.mkdir(game_directory)
 
-    deadhead_index = build_all_duration_matrix(coordinates_list, use_cache)
+    deadhead_index = build_all_duration_matrix(coordinates_list)
 
     return deadhead_index, solve_tsp_for_deadhead_index(
-        deepcopy(deadhead_index), game_directory, game_id, mock=MOCK, location=location
+        deepcopy(deadhead_index), game_directory.replace(" ",""), game_id.replace(" ",""),
+        location.replace(" ",""), read_from_cache
     )
 
 
-def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, mock=MOCK, location=None):
+def solve_tsp_for_deadhead_index(deadhead_index, game_dir, game_id, location, read_from_cache):
     if not os.path.exists(game_dir):
         os.mkdir(game_dir)
+    if not os.path.exists(location):
+        os.mkdir(location)
     input_file_name = os.path.join(game_dir, "input.tsp")
     output_file_name = os.path.join(game_dir, "output.res")
+    location_output_file_name = os.path.join(location, "output.res")
 
-    if os.path.exists(output_file_name) and mock is not False:
-        time.sleep(1.5 + random())
-        with open(output_file_name, "r") as fid:
+    if read_from_cache and os.path.exists(output_file_name):
+        with open(location_output_file_name, "r") as fid:
+            print("Returning cached output file: {}".format(location_output_file_name))
             return fid.read().split("\n")
 
     maximal_deadhead = max(
@@ -282,6 +283,9 @@ EOF""".format(
     asymmetric_output_file_name = os.path.join(game_dir, "asym-good_output.res")
     with open(asymmetric_output_file_name, "w") as fid:
         fid.write("\n".join(asymmetric_output_columns))
+    with open(location_output_file_name, "w") as fid:
+        fid.write("\n".join(asymmetric_output_columns))
+
     return asymmetric_output_columns
 
 
