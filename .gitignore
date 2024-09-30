@@ -7,5 +7,5 @@
 #/google_cache_path/
 /*.pul
 /*.sav
-/*/*output.res
+#/*/*output.res
 /*/*.tsp
