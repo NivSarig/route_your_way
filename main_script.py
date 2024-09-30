@@ -91,7 +91,7 @@ if __name__ == "__main__":
             [32.0633681, 34.7728317],
             [32.0728065, 34.7948381]
         ],
-        "London": [
+        "London11": [
             [51.5229532, -0.0805527],
             [51.5190351, -0.0704977],
             [51.5289369, -0.0620099],
@@ -302,7 +302,7 @@ if __name__ == "__main__":
         [48.8683, 2.3425],
         [48.832, 2.3551],
     ],
-    "New York": [
+    "New York10": [
         [40.7293, -73.9844],
         [40.7380, -74.0027],
         [40.7165, -73.9946],
@@ -326,11 +326,57 @@ if __name__ == "__main__":
         [-23.6072, -46.6342],
         [-23.5852, -46.6742],
     ],
+        # London
+        'London': [
+            [51.5194, -0.1270],  # The British Museum
+            [51.5081, -0.0759],  # Tower of London
+            [51.5115, -0.1234],  # Covent Garden
+            [51.5101, -0.1340],  # Piccadilly Circus
+            [51.4769, -0.0005],  # Greenwich Park
+            [51.5566, -0.1781],  # Hampstead Heath
+            [51.4784, -0.1542],  # Battersea Park
+            [51.5306, -0.1230],  # King's Cross Station
+            [51.4780, -0.2950],  # Kew Gardens
+            [51.4343, -0.2145],  # Wimbledon Tennis Club
+            [51.5942, -0.1300],  # Alexandra Palace
+            [51.5053, 0.0542],  # London City Airport
+            [51.4182, -0.0719],  # Crystal Palace Park
+            [51.5609, -0.0078]  # Leyton Orient Football Club
+        ],
+        'New York': [
+            [40.7580, -73.9855],  # Times Square
+            # [40.6413, -73.7781],  # JFK Airport
+            [40.5749, -73.9859],  # Coney Island
+            [40.7516, -73.8267],  # Queens Botanical Garden
+            [40.8075, -73.9626],  # Columbia University
+            [40.6718, -73.9637],  # Brooklyn Museum
+            [40.8689, -73.8100],  # Pelham Bay Park
+            # [40.7769, -73.8740],  # LaGuardia Airport
+            [40.8623, -73.8800],  # New York Botanical Garden
+            [40.5795, -73.8373],  # Rockaway Beach
+            [40.6437, -74.0736],  # Staten Island Ferry Terminal
+            [40.8104, -73.9153]  # St Mary’s Park
+        ],
+        'San Francisco': [
+            [37.7734, -122.4680],  # Golden Gate Park
+            [37.7617, -122.4468],  # Tank Hill
+            [37.7492, -122.4569],  # Laguna Hospital
+            [37.7210, -122.4441],  # Balboa Park
+            [37.7356, -122.5057],  # San Francisco Zoo
+            [37.7335, -122.4343],  # Glen Park
+            [37.7439, -122.4133],  # Bernal Heights Park
+            [37.7595, -122.5102],  # Ocean Beach
+            [37.7617, -122.4258],  # Dolores Street and 18th Street Intersection
+            [37.7404, -122.4658],  # West Portal
+            [37.7850, -122.4292],  # Japantown
+            [37.7510, -122.4332],  # Noe Valley
+            [37.7599, -122.3977],  # Potrero Hill
+            [37.7484, -122.4803],  # Sunset District
+        ]
     }
     game_id = "London"
-    game_id = "Paris"
-    # game_id = "Short"
-    use_cache = True
+    game_id = "SaoPaulo"
+    game_id = "San Francisco"
     benchmarking_with_brute = False
 
     if not benchmarking_with_brute:
@@ -343,8 +389,9 @@ if __name__ == "__main__":
         print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
     else:
         all_games = {}
-        for game_id in ['Short', 'Short3', 'Short5', 'Short4', 'TelAviv', 'TelAviv6', 'TelAvivBad', 'London8', 'London9',
-                        'London10', 'London6', 'Paris', 'New York', "Sao Paulo"]:
+        for game_id in ['TelAviv', 'TelAviv6', 'TelAvivBad', 'London8', 'London9',
+                        'London10', 'London6', 'Paris', 'New York10', "Sao Paulo", "San Francisco",
+                        "New York", "London"]:
             short_coordinates = locations[game_id]
             url, distance, duration, coordinates, brute_stops, stops = \
                 get_distance_and_duration_from_game_id_and_compare_with_brute(
