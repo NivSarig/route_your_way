@@ -106,8 +106,16 @@ def get_route_info(origin, destination):
     print(f"Fetching data from {url}")
     cache_path = os.path.join(GOOGLE_CACHE_LOCATION_PATH, "{}_{}".format(origin, destination))
     if os.path.exists(cache_path):
-        data = json.load(open(cache_path, 'r'))
-        print(f"Found data for {origin}, {destination} in cache")
+        try:
+            data = json.load(open(cache_path, 'r'))
+            print(f"Found data for {origin}, {destination} in cache")
+        except Exception as e:
+            print("Cached file is corrupted, trying to fetch from API once again")
+            print("cache_path: {}, e: {}".format(cache_path, e))
+            data = requests.get(url, timeout=1).json()
+            print(f"Found data for {origin}, {destination}")
+            print(f"Caching data at {cache_path}")
+            json.dump(data, open(cache_path, 'w'))
     else:
         data = requests.get(url, timeout=1).json()
         print(f"Found data for {origin}, {destination}")
