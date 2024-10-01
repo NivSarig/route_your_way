@@ -92,7 +92,7 @@ const StyledContinueButton = styled(Button)(() => ({
     animation: "pulse 1.6s infinite",
   },
 }));
-const cities = ["London", "Tel Aviv", "New York", "San Francisco", "Paris"];
+const cities = ["London", "Tel Aviv", "New York", "San Francisco"];
 
 function CreateGamePage() {
   const [city, setCity] = useState<string>("");
