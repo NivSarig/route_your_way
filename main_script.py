@@ -378,6 +378,7 @@ if __name__ == "__main__":
     game_id = "SaoPaulo"
     game_id = "San Francisco"
     benchmarking_with_brute = False
+    read_from_cache = False
 
     if not benchmarking_with_brute:
         short_coordinates = locations[game_id]
@@ -385,8 +386,9 @@ if __name__ == "__main__":
         # short_coordinates = short_coordinates + [[la+1, lo-1] for la,lo in short_coordinates]
 
         url, distance, duration, coordinates = get_distance_and_duration_from_game_id(
-                short_coordinates, game_id, use_cache=use_cache)
-        print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
+                short_coordinates, game_id, location=game_id, read_from_cache=read_from_cache)
+        print("url: {}, distance: {}, duration: {}, game_id: {}, location: {}".format(url, distance, duration,
+                                                                                      game_id, game_id))
     else:
         all_games = {}
         for game_id in ['TelAviv', 'TelAviv6', 'TelAvivBad', 'London8', 'London9',
@@ -395,7 +397,7 @@ if __name__ == "__main__":
             short_coordinates = locations[game_id]
             url, distance, duration, coordinates, brute_stops, stops = \
                 get_distance_and_duration_from_game_id_and_compare_with_brute(
-                    short_coordinates, game_id, use_cache=use_cache, location=game_id)
+                    short_coordinates, game_id, location=game_id, read_from_cache=read_from_cache)
             print("url: {}, distance: {}, duration: {}, game_id: {}".format(url, distance, duration, game_id))
             all_games[game_id] = {"game_id": game_id, "brute_stops": brute_stops, "stops": stops}
 
