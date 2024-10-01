@@ -47,7 +47,6 @@ def create_game(location, code, random, background_tasks: BackgroundTasks):
 
 def solve(game_id, location, coordinates):
 
-    # From the actual game we will refresh cache for deadhead matrix hence use_cache=False
     url, distance, duration, coordinates_solution = (
         get_distance_and_duration_from_game_id(coordinates, game_id, location)
     )
