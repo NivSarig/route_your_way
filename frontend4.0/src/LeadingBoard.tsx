@@ -29,13 +29,22 @@ const coordinatesToLink = (coordinates: [number[]]) => {
   );
 };
 
+const formatTime = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${remainingMinutes} Minutes`;
+  return `${hours} Hours, ${remainingMinutes} Minutes`;
+};
+
 const createData = (rank: number, name: string, duration: string, distance: string, coordinates: [number[]]): Data => {
   const link = coordinatesToLink(coordinates);
+  let totalMinutes = 0;
+  totalMinutes = Math.round(60 * (parseInt(distance) / 40));
 
   return {
     rank,
     name,
-    time: `${duration.split(":")[0]} Hours, ${duration.split(":")[1]} Minutes`,
+    time: formatTime(totalMinutes),
     distance,
     link,
   };
@@ -111,10 +120,9 @@ function LeadingBoard() {
     setInterval(poll, 3000);
   }, [leaderBoard.length, location.state.code]);
 
-  const algoTime = `${gameState?.solution?.duration.split(":")[0]} Hours, ${
-    gameState?.solution?.duration.split(":")[1]
-  } Minutes`;
   const algoDistance = gameState?.solution?.distance;
+  const algoTimeMinutes = Math.round(60 * (parseInt(algoDistance) / 40));
+  const algoTime = formatTime(algoTimeMinutes);
   const algoLink = coordinatesToLink(gameState?.solution?.coordinates || []);
 
   return (
