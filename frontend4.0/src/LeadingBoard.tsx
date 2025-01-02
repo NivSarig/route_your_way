@@ -4,15 +4,7 @@ import QRCode from "./QRCode.png";
 import { ReactComponent as AvatarIcon } from "./algo_avatar.svg";
 import { ReactComponent as PlayerAvatar } from "./playerAvatar.svg";
 import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { BACKEND } from "./backend";
 
@@ -33,25 +25,26 @@ type Contestant = {
 
 const coordinatesToLink = (coordinates: [number[]]) => {
   return (
-    "https://www.google.com/maps/dir/" +
-    coordinates.map((c) => c.join(",")).join("/") +
-    "/data=!3m1!4b1!4m2!4m1!3e2"
+    "https://www.google.com/maps/dir/" + coordinates.map(c => c.join(",")).join("/") + "/data=!3m1!4b1!4m2!4m1!3e2"
   );
 };
 
-const createData = (
-  rank: number,
-  name: string,
-  duration: string,
-  distance: string,
-  coordinates: [number[]]
-): Data => {
+const formatTime = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${remainingMinutes} Minutes`;
+  return `${hours} Hours, ${remainingMinutes} Minutes`;
+};
+
+const createData = (rank: number, name: string, duration: string, distance: string, coordinates: [number[]]): Data => {
   const link = coordinatesToLink(coordinates);
+  let totalMinutes = 0;
+  totalMinutes = Math.round(60 * (parseInt(distance) / 40));
 
   return {
     rank,
     name,
-    time: `${duration.split(":")[0]} Hours, ${duration.split(":")[1]} Minutes`,
+    time: formatTime(totalMinutes),
     distance,
     link,
   };
@@ -101,32 +94,24 @@ function LeadingBoard() {
       fetch(`${BACKEND}/game/${location.state.code}`, {
         method: "GET",
       })
-        .then(async (response) => {
+        .then(async response => {
           const newGameState = await response.json();
           console.log("game state", newGameState);
           setGameState(newGameState);
-          const sorted = Object.values(newGameState.contestants).sort(
-            (a: Contestant, b: Contestant) => {
-              return a.distance - b.distance;
-            }
-          );
+          const sorted = Object.values(newGameState.contestants).sort((a: Contestant, b: Contestant) => {
+            return a.distance - b.distance;
+          });
           if (sorted.length !== leaderBoard.length) {
             setLeaderBoard(
               sorted
                 .filter((c: Contestant) => c.distance !== undefined)
                 .map((c: Contestant, i) => {
-                  return createData(
-                    i + 1,
-                    c.name,
-                    c.duration,
-                    c.distance?.toString(),
-                    c.coordinates
-                  );
+                  return createData(i + 1, c.name, c.duration, c.distance?.toString(), c.coordinates);
                 })
             );
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("failed to get response", error);
           alert("Lost connection with the server");
         });
@@ -135,15 +120,14 @@ function LeadingBoard() {
     setInterval(poll, 3000);
   }, [leaderBoard.length, location.state.code]);
 
-  const algoTime = `${gameState?.solution?.duration.split(":")[0]} Hours, ${
-    gameState?.solution?.duration.split(":")[1]
-  } Minutes`;
   const algoDistance = gameState?.solution?.distance;
+  const algoTimeMinutes = Math.round(60 * (parseInt(algoDistance) / 40));
+  const algoTime = formatTime(algoTimeMinutes);
   const algoLink = coordinatesToLink(gameState?.solution?.coordinates || []);
 
   return (
     <Container>
-      <Box marginTop="25vh">
+      <Box marginTop='25vh'>
         <Typography
           textTransform={"uppercase"}
           fontWeight={800}
@@ -155,16 +139,9 @@ function LeadingBoard() {
           {"Did you beat the algorithm?"}
         </Typography>
         <TableContainer sx={{ marginTop: "16px" }}>
-          <Table
-            stickyHeader
-            aria-label="simple table"
-            sx={{ borderCollapse: "separate", borderSpacing: "0px 10px" }}
-          >
+          <Table stickyHeader aria-label='simple table' sx={{ borderCollapse: "separate", borderSpacing: "0px 10px" }}>
             <TableHead>
-              <TableRow
-                component={Paper}
-                sx={{ backgroundColor: "transparent", boxShadow: "none" }}
-              >
+              <TableRow component={Paper} sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
                 <HeaderTableCell></HeaderTableCell>
                 <HeaderTableCell></HeaderTableCell>
                 <HeaderTableCell>Route Time</HeaderTableCell>
@@ -198,9 +175,7 @@ function LeadingBoard() {
                     borderRadius: "0px 50px 50px 0px",
                   }}
                 >
-                  <a href={algoLink} style={{ color: "inherit" }}>
-                    {`${algoDistance} KM`}
-                  </a>
+                  <p style={{ color: "inherit" }}>{`${algoDistance} KM`}</p>
                 </PinkTableCell>
               </TableRow>
               {leaderBoard.map((row, index) => (
@@ -212,15 +187,15 @@ function LeadingBoard() {
                   }}
                 >
                   <TableCell
-                    component="th"
-                    scope="row"
+                    component='th'
+                    scope='row'
                     sx={{
                       borderRadius: "50px 0px 0px 50px",
                       borderBottom: "none",
                     }}
                   >
                     <PlayerAvatar
-                      color="white"
+                      color='white'
                       style={{
                         height: "50px",
                         width: "50px",
@@ -236,10 +211,7 @@ function LeadingBoard() {
                       paddingRight: "30px",
                     }}
                   >
-                    <a
-                      href={row.link}
-                      style={{ color: "inherit" }}
-                    >{`${row.distance} KM`}</a>
+                    <p style={{ color: "inherit" }}>{`${row.distance} KM`}</p>
                   </PinkTableCell>
                 </TableRow>
               ))}
