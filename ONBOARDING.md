@@ -262,6 +262,16 @@ All via React hooks (`useState`, `useCallback`, `useEffect`). No Redux or global
 
 ---
 
+## Cost & Usage Monitoring
+
+Google Maps API usage and cloud spend are tracked via DoiT:
+
+**Dashboard**: https://console.doit.com/customers/bA3mtbUwaouS3dzZeg6T/dashboards/Planning%20Maps
+
+Monitor this when running the game at scale or adding new cities, since each new city generates O(N²) Google Maps API calls (one per stop pair).
+
+---
+
 ## Environment Variables
 
 | Variable | Where Used | Description |
