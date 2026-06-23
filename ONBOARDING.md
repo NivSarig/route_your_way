@@ -160,6 +160,8 @@ All endpoints on port 8000.
 
 ## Optimization Backend (Bo Jensen's Domain)
 
+> **Note:** The solver pipeline below describes how the optimal solutions were originally generated. In the current production deployment, solver results are **static/pre-computed** — Concorde is not installed or invoked at runtime. If you need to generate solutions for new cities or new stop sets, talk to Bo Jensen first.
+
 ### The Problem
 
 Route stops form an **Asymmetric TSP (ATSP)**: walking A→B takes different time than B→A (one-way streets, elevation, etc.). The goal is an *open* route (start at stop 1, end at last stop, no return).
